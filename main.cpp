@@ -1,11 +1,14 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
-#include "agent_maneger.hpp"
+#include "agent_manager.hpp"
+#include "render_engine.hpp"
 
 int main() {
-    sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
-    sf::CircleShape shape(100.f);
-    shape.setFillColor(sf::Color::Green);
+    render_engine r{200, 200, "testing"};
+    r.main_loop();
+    //sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
+    //sf::CircleShape shape(100.f);
+    //shape.setFillColor(sf::Color::Green);
 
     //agent_manager a{};
     //position p{1, 2};
@@ -14,17 +17,6 @@ int main() {
     //a.add_agent(p, t, m);
     //std::cout<<a.positions[0].x<<" "<<a.positions[0].y<<" "<<a.types[0]<<std::endl;
 
-    while (window.isOpen()) {
-        sf::Event event;
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed)
-                window.close();
-        }
-
-        window.clear();
-        window.draw(shape);
-        window.display();
-    }
 
     return 0;
 }

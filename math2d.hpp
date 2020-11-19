@@ -1,3 +1,4 @@
+#pragma once
 #define MATRIX_ROWS 50
 #define MATRIX_COLS 50
 class position{
