@@ -1,7 +1,11 @@
+#pragma once
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <string>
+#include <functional>
 #include "math2d.hpp"
+#include "error_handling.hpp"
+#include "types.hpp"
 
 class render_engine{
     public:
@@ -11,7 +15,10 @@ class render_engine{
 
         void render_agents(std::vector<position> &positions);
 
-        std::vector<void*(*)()> function_list;
+        std::vector< generic_func > function_list;
+        std::vector<void*> function_args;
+
+        status add_function(generic_func f, void* a);
 
         void main_loop();
 };
@@ -20,6 +27,9 @@ render_engine::render_engine(int width, int height, std::string title): window{s
 
 void render_engine::render_agents(std::vector<position> &positions){
     //render circles based on position
+    for(auto& pos: positions){
+
+    }
 }
 
 void render_engine::main_loop(){
@@ -32,7 +42,17 @@ void render_engine::main_loop(){
 
         window.clear();
 
-        //window.draw(shape);
+        auto f_it = function_list.begin();
+        auto a_it = function_args.begin();
+
+        for(;f_it!=function_list.end() && a_it != function_args.end(); f_it++, a_it++){
+            (*f_it)(*a_it);
+        }
         window.display();
     }
+}
+status render_engine::add_function(generic_func f, void* a){
+    function_list.push_back(f);
+    function_args.push_back(a);
+    return status::success;
 }
