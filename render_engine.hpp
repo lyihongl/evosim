@@ -8,6 +8,8 @@
 #include "error_handling.hpp"
 #include "types.hpp"
 
+#define AGENT_SIZE 23.f
+
 class render_engine{
     public:
 
@@ -27,10 +29,10 @@ class render_engine{
 };
 
 render_engine::render_engine(int width, int height, std::string title): 
-window{sf::VideoMode(width, height), title},
+window{sf::VideoMode(width, height), title, sf::Style::Titlebar | sf::Style::Close},
 window_contents_texture{} {
-    window_contents_texture.create(width, height);
-    window_contents_image.create(width, height);
+    window_contents_texture.create(window.getSize().x, window.getSize().y);
+    window_contents_image.create(window.getSize().x, window.getSize().y);
     //std::cout<<"texture size: "<<window_contents_texture.getSize().x<<std::endl;
     window.setActive(false);
 };
@@ -53,9 +55,9 @@ void render_engine::main_loop(){
 
         window.clear();
 
-        sf::CircleShape template_circle(25.f);
+        sf::CircleShape template_circle(AGENT_SIZE);
         template_circle.setFillColor(sf::Color::Green);
-        template_circle.setOrigin(25.f, 25.f);
+        template_circle.setOrigin(AGENT_SIZE, AGENT_SIZE);
         for(auto const& it: circle_positions){
             template_circle.setPosition(it);
             window.draw(template_circle);
@@ -70,7 +72,7 @@ void render_engine::main_loop(){
 
         //can multithread here
         window_contents_texture.update(window);
-        std::cout<<"pixels: " <<window_contents_texture.copyToImage().getPixel(100, 100).toInteger()<<std::endl;
+        //std::cout<<"pixels: " <<window_contents_texture.copyToImage().getPixel(100, 100).toInteger()<<std::endl;
 
         window.display();
 

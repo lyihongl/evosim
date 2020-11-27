@@ -3,9 +3,10 @@
 #include <thread>
 #include "agent_manager.hpp"
 #include "render_engine.hpp"
+#include "brain.hpp"
 
 int main() {
-    render_engine r{1000, 1000, "testing"};
+    render_engine r{1600, 900, "testing"};
     r.circle_positions.push_back(sf::Vector2f{0.f, 100.f});
     r.circle_positions.push_back(sf::Vector2f{100.f, 100.f});
     r.circle_positions.push_back(sf::Vector2f{200.f, 100.f});
