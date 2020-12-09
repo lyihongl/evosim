@@ -4,7 +4,6 @@
 #include <vector>
 #include <string>
 #include <functional>
-#include "math2d.hpp"
 #include "error_handling.hpp"
 #include "types.hpp"
 
