@@ -7,19 +7,22 @@
 #include "brain.hpp"
 
 int main() {
-    Eigen::MatrixXd test(2, 3);
+    Eigen::MatrixXd test(1, 3);
     Eigen::MatrixXd test2(3, 3);
-    test << 1, 2, 3,
-            4, 5, 6;
+    test << 0.5, 0.8, 0.1;
     test2 <<    1, 1, 1,
                 1, 1, 1,
                 1, 1, 1;
-    std::cout<<test*test2<<std::endl;
+    //std::cout<<test*test2<<std::endl;
     agent_manager am{};
     am.add_agent(sf::Vector2f{0, 0}, agent_type::pred);
     am.add_decision_matrix(0, test);
     am.add_decision_matrix(0, test2);
-    std::cout<<test(0, 1)<<std::endl;
+    std::unique_ptr<actions> a = std::move( calculate_action(am.decision_matrices[0]));
+    //auto m = am.decision_matrices[0][0];
+    //auto m = am.get_val<std::vector<Eigen::MatrixXd>>(0)[0];
+    //std::cout<<m <<std::endl;
+    //std::cout<<am.get_val<Eigen::MatrixXd>()<<std::endl;
     //render_engine r{1600, 900, "testing"};
     //r.circle_positions.push_back(sf::Vector2f{0.f, 100.f});
     //r.circle_positions.push_back(sf::Vector2f{100.f, 100.f});

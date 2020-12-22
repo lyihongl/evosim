@@ -1,23 +1,41 @@
 #pragma once
+#include <cmath>
 #include <SFML/System/Vector2.hpp>
 #include <vector>
 #include <Eigen/Dense>
+#include <Eigen/Core>
+#include <memory>
 #include "agent_manager.hpp"
 #include "logging.hpp"
 
 
-typedef struct actions{
-    float v_x, v_y, theta;
-} actions;
+class actions{
+    public:
+    double v_x, v_y, theta;
+    actions(double v_x, double v_y, double theta){
+        this->v_x = v_x;
+        this->v_y = v_y;
+        this->theta = theta;
+    }
+};
 
-void calculate_action(actions& output, const std::vector<Eigen::MatrixXd>& weights){
-    Eigen::MatrixXd result = weights[0];
-    if(weights.end()->cols() != 3){
+double sigmoid(double x){
+    return (double)1/((double)1+std::exp(-x));
+}
+
+std::unique_ptr<actions> calculate_action(const std::vector<Eigen::MatrixXd>& weights){
+    Eigen::MatrixXd result = weights[0].unaryExpr(&sigmoid);
+    std::cout<<weights.back()<<std::endl;
+    if(weights.back().cols() != 3){
         log_err("weights matrix final matrix column dimension wrong, expected 2 got: " << weights.end()->cols());
     }
     for(int i = 1; i<weights.size(); i++){
         result*=weights[i];
+        result = result.unaryExpr(&sigmoid);
     }
+    std::cout << "RESULT: "<<result<<std::endl;
+    return std::unique_ptr<actions>(new actions{result(0, 0), result(0, 1), result(0, 2)});
+
 }
 
 //class matrix_layer{
