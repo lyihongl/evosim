@@ -25,7 +25,7 @@ double sigmoid(double x){
 
 std::unique_ptr<actions> calculate_action(const std::vector<Eigen::MatrixXd>& weights){
     Eigen::MatrixXd result = weights[0].unaryExpr(&sigmoid);
-    std::cout<<weights.back()<<std::endl;
+    //std::cout<<weights.back()<<std::endl;
     if(weights.back().cols() != 3){
         log_err("weights matrix final matrix column dimension wrong, expected 2 got: " << weights.end()->cols());
     }
@@ -33,7 +33,7 @@ std::unique_ptr<actions> calculate_action(const std::vector<Eigen::MatrixXd>& we
         result*=weights[i];
         result = result.unaryExpr(&sigmoid);
     }
-    std::cout << "RESULT: "<<result<<std::endl;
+    //std::cout << "RESULT: "<<result<<std::endl;
     return std::unique_ptr<actions>(new actions{result(0, 0), result(0, 1), result(0, 2)});
 
 }

@@ -6,6 +6,7 @@
 #include <functional>
 #include "error_handling.hpp"
 #include "types.hpp"
+#include "logging.hpp"
 
 #define AGENT_SIZE 23.f
 
@@ -19,11 +20,13 @@ class render_engine{
 
         //void render_agents(std::vector<position> &positions);
 
-        std::vector< generic_func > function_list;
+        std::vector< generic_func_render > function_list;
         std::vector<void*> function_args;
-        std::vector<sf::Vector2f> circle_positions;
+        std::vector<sf::CircleShape> agents;
+        agent_manager* am;
+        //std::vector<sf::Vector2f> circle_positions;
 
-        status add_function(generic_func f, void* a); 
+        status add_function(generic_func_render f, void* a); 
         void main_loop();
 };
 
@@ -55,18 +58,29 @@ void render_engine::main_loop(){
         window.clear();
 
         sf::CircleShape template_circle(AGENT_SIZE);
-        template_circle.setFillColor(sf::Color::Green);
         template_circle.setOrigin(AGENT_SIZE, AGENT_SIZE);
-        for(auto const& it: circle_positions){
-            template_circle.setPosition(it);
+        //for(auto const& it: circle_positions){
+            //template_circle.setPosition(it);
+            //window.draw(template_circle);
+        //}
+        //log_err("here");
+        for(int i = 0; i<am->num_agents; i++){
+            if(am->types[i] == agent_type::pred)
+                template_circle.setFillColor(sf::Color::Red);
+            else
+                template_circle.setFillColor(sf::Color::Green);
+            template_circle.setPosition(am->positions[i]);
+            log("Postion"<<" "<<(am->positions[i].x)<<" "<<(am->positions[i].y));
+            //std::cout<<"position"
             window.draw(template_circle);
         }
+        //log_err("here");
 
         auto f_it = function_list.begin();
         auto a_it = function_args.begin();
 
         for(;f_it!=function_list.end() && a_it != function_args.end(); f_it++, a_it++){
-            (*f_it)(window, *a_it);
+            (*f_it)(window, am, *a_it);
         }
 
         //can multithread here
@@ -77,7 +91,7 @@ void render_engine::main_loop(){
 
     }
 }
-status render_engine::add_function(generic_func f, void* a){
+status render_engine::add_function(generic_func_render f, void* a){
     function_list.push_back(f);
     function_args.push_back(a);
     return status::success;

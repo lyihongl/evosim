@@ -1,4 +1,4 @@
 #pragma once
-#define generic_func std::function<void*(sf::Window&, void*)>
-
-#include <SFML/Graphics.hpp>
+#include "agent_manager.hpp"
+#define generic_func_render std::function<void*(sf::Window&, agent_manager*, void*)>
+#define generic_func std::function<void*(agent_manager*, void*)>
