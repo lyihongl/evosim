@@ -34,6 +34,8 @@ class render_engine{
         status add_function(generic_func_render f, void* a); 
         void main_loop();
         void draw_angled_line(const sf::Vector2f& position, const double length, const int angle);
+        sf::Image& get_window_image();
+        //void draw_both()
 };
 
 render_engine::render_engine(int width, int height, std::string title): 
@@ -113,4 +115,8 @@ void render_engine::draw_angled_line(const sf::Vector2f& position, const double 
         end
     };
     window.draw(line, 2, sf::Lines);
+}
+sf::Image& render_engine::get_window_image(){
+    window_contents_image = window_contents_texture.copyToImage();
+    return window_contents_image;
 }
