@@ -1,4 +1,6 @@
 #pragma once
+#define _USE_MATH_DEFINES
+#include <math.h>
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <vector>
@@ -7,8 +9,11 @@
 #include "error_handling.hpp"
 #include "types.hpp"
 #include "logging.hpp"
+#include "math.hpp"
 
 #define AGENT_SIZE 23.f
+
+void draw_angled_line(sf::RenderWindow& w, double theta);
 
 class render_engine{
     public:
@@ -28,6 +33,7 @@ class render_engine{
 
         status add_function(generic_func_render f, void* a); 
         void main_loop();
+        void draw_angled_line(const sf::Vector2f& position, const double length, const int angle);
 };
 
 render_engine::render_engine(int width, int height, std::string title): 
@@ -73,15 +79,18 @@ void render_engine::main_loop(){
             log("Postion"<<" "<<(am->positions[i].x)<<" "<<(am->positions[i].y));
             //std::cout<<"position"
             window.draw(template_circle);
+            draw_angled_line(am->positions[i], 50, 90);
         }
         //log_err("here");
 
+        /*
         auto f_it = function_list.begin();
         auto a_it = function_args.begin();
 
         for(;f_it!=function_list.end() && a_it != function_args.end(); f_it++, a_it++){
             (*f_it)(window, am, *a_it);
         }
+        */
 
         //can multithread here
         window_contents_texture.update(window);
@@ -95,4 +104,13 @@ status render_engine::add_function(generic_func_render f, void* a){
     function_list.push_back(f);
     function_args.push_back(a);
     return status::success;
+}
+
+void render_engine::draw_angled_line(const sf::Vector2f& position, const double length, const int angle){
+    sf::Vector2f end{position.x+evo_math::cos(angle)*length, position.y-evo_math::sin(angle)*length};
+    sf::Vertex line[] = {
+        position,
+        end
+    };
+    window.draw(line, 2, sf::Lines);
 }

@@ -6,8 +6,11 @@
 #include "render_engine.hpp"
 #include "brain.hpp"
 #include "actions_engine.hpp"
+#include "math.hpp"
 
 int main() {
+    evo_math::init_trig_table();
+
     Eigen::MatrixXd test(1, 3);
     Eigen::MatrixXd test2(3, 3);
     test << 0.5, 0.8, 0.1;
@@ -23,11 +26,15 @@ int main() {
 
     am.add_decision_matrix(1, test);
     am.add_decision_matrix(1, test2);
+    //for(int i = 0; i<evo_math::RESOLUTION; i++){
+    //    std::cout<<evo_math::sin(i)<<" "<<evo_math::cos(i)<<std::endl;
+    //}
     //std::unique_ptr<actions> a = std::move( calculate_action(am.decision_matrices[0]));
     //auto m = am.decision_matrices[0][0];
     //auto m = am.get_val<std::vector<Eigen::MatrixXd>>(0)[0];
     //std::cout<<m <<std::endl;
     //std::cout<<am.get_val<Eigen::MatrixXd>()<<std::endl;
+
     render_engine r{1600, 900, "testing"};
     actions_engine a{};
     a.am = &am;
