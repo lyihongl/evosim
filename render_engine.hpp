@@ -20,7 +20,7 @@ class render_engine{
 
         render_engine(int width, int height, std::string title);
         sf::RenderWindow window;
-        sf::Texture window_contents_texture;
+        sf::RenderTexture window_contents_texture;
         sf::Image window_contents_image;
 
         //void render_agents(std::vector<position> &positions);
@@ -35,6 +35,7 @@ class render_engine{
         void main_loop();
         void draw_angled_line(const sf::Vector2f& position, const double length, const int angle);
         sf::Image& get_window_image();
+        uint32_t get_pixel(unsigned int x, unsigned int y);
         //void draw_both()
 };
 
@@ -81,7 +82,8 @@ void render_engine::main_loop(){
             log("Postion"<<" "<<(am->positions[i].x)<<" "<<(am->positions[i].y));
             //std::cout<<"position"
             window.draw(template_circle);
-            draw_angled_line(am->positions[i], 50, 90);
+            window_contents_texture.draw(template_circle);
+            draw_angled_line(am->positions[i], 50, evo_math::normalize_angle(45));
         }
         //log_err("here");
 
@@ -95,7 +97,7 @@ void render_engine::main_loop(){
         */
 
         //can multithread here
-        window_contents_texture.update(window);
+        //window_contents_texture.update(window);
         //std::cout<<"pixels: " <<window_contents_texture.copyToImage().getPixel(100, 100).toInteger()<<std::endl;
 
         window.display();
@@ -117,6 +119,10 @@ void render_engine::draw_angled_line(const sf::Vector2f& position, const double 
     window.draw(line, 2, sf::Lines);
 }
 sf::Image& render_engine::get_window_image(){
-    window_contents_image = window_contents_texture.copyToImage();
+    window_contents_image = window_contents_texture.getTexture().copyToImage();
     return window_contents_image;
+}
+
+uint32_t render_engine::get_pixel(unsigned int x, unsigned int y){
+    auto color = get_window_image().getPixel(x, y);
 }

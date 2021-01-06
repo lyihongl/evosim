@@ -34,7 +34,14 @@ int main() {
     //auto m = am.get_val<std::vector<Eigen::MatrixXd>>(0)[0];
     //std::cout<<m <<std::endl;
     //std::cout<<am.get_val<Eigen::MatrixXd>()<<std::endl;
+    std::vector<sf::Vector2f> test3;
+    sf::Vector2f start{0, 0};
+    evo_math::populate_line_points(test3, 10, start, 1, 45);
+    for(const auto &a: test3){
+        std::cout << a.x<<" "<<a.y << std::endl;
+    }
 
+    /*
     render_engine r{1600, 900, "testing"};
     actions_engine a{};
     a.am = &am;
@@ -51,6 +58,7 @@ int main() {
     render_thread.join();
     a.run = false;
     calc_thread.join();
+    */
 
     //pthread_create(&render_thread, NULL, &r.main_loop, NULL);
     //r.main_loop();
