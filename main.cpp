@@ -1,22 +1,23 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
-#include <thread>
 #include <Eigen/Dense>
+#include <thread>
 #include "agent_manager.hpp"
 #include "render_engine.hpp"
 #include "brain.hpp"
 #include "actions_engine.hpp"
 #include "math.hpp"
 
-int main() {
+int main()
+{
     evo_math::init_trig_table();
 
     Eigen::MatrixXd test(1, 3);
     Eigen::MatrixXd test2(3, 3);
     test << 0.5, 0.8, 0.1;
-    test2 <<    1, 4, 1,
-                1, 5, 1,
-                1, 1, 1;
+    test2 << 1, 4, 1,
+        1, 5, 1,
+        1, 1, 1;
     //std::cout<<test*test2<<std::endl;
     agent_manager am{};
     am.add_agent(sf::Vector2f{100, 100}, agent_type::pred);
@@ -37,11 +38,11 @@ int main() {
     std::vector<sf::Vector2f> test3;
     sf::Vector2f start{0, 0};
     evo_math::populate_line_points(test3, 10, start, 1, 45);
-    for(const auto &a: test3){
-        std::cout << a.x<<" "<<a.y << std::endl;
+    for (const auto &a : test3)
+    {
+        std::cout << a.x << " " << a.y << std::endl;
     }
 
-    /*
     render_engine r{1600, 900, "testing"};
     actions_engine a{};
     a.am = &am;
@@ -58,7 +59,6 @@ int main() {
     render_thread.join();
     a.run = false;
     calc_thread.join();
-    */
 
     //pthread_create(&render_thread, NULL, &r.main_loop, NULL);
     //r.main_loop();
@@ -72,7 +72,6 @@ int main() {
     //agent_type t = prey;
     //a.add_agent(p, t, m);
     //std::cout<<a.positions[0].x<<" "<<a.positions[0].y<<" "<<a.types[0]<<std::endl;
-
 
     return 0;
 }
