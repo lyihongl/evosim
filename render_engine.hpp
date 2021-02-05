@@ -60,6 +60,7 @@ void render_engine::main_loop(){
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
+            std::cout << "Polling event loop" << std::endl;
             if (event.type == sf::Event::Closed)
                 window.close();
         }

@@ -1,3 +1,5 @@
+#define WINDOWS
+#include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <Eigen/Dense>
@@ -11,7 +13,6 @@
 int main()
 {
     evo_math::init_trig_table();
-
     Eigen::MatrixXd test(1, 3);
     Eigen::MatrixXd test2(3, 3);
     test << 0.5, 0.8, 0.1;
@@ -43,22 +44,23 @@ int main()
         std::cout << a.x << " " << a.y << std::endl;
     }
 
+    //std::thread render_thread{&begin_render_thread};
+    //render_thread.join();
     render_engine r{1600, 900, "testing"};
     actions_engine a{};
     a.am = &am;
     r.am = &am;
-    //r.circle_positions.push_back(sf::Vector2f{0.f, 100.f});
-    //r.circle_positions.push_back(sf::Vector2f{100.f, 100.f});
-    //r.circle_positions.push_back(sf::Vector2f{200.f, 100.f});
-    //r.circle_positions.push_back(sf::Vector2f{900.f, 900.f});
-    //r.main_loop();
-    //log_err("here");
-    std::thread render_thread{&render_engine::main_loop, &r};
+
+    //std::thread render_thread{&render_engine::main_loop, &r};
     a.run = true;
+
     std::thread calc_thread{&actions_engine::run_engine, &a};
-    render_thread.join();
+
+    r.main_loop();
     a.run = false;
+
     calc_thread.join();
+    //render_thread.join();
 
     //pthread_create(&render_thread, NULL, &r.main_loop, NULL);
     //r.main_loop();
