@@ -9,6 +9,7 @@
 #include "brain.hpp"
 #include "actions_engine.hpp"
 #include "math.hpp"
+#include "asset_manager.hpp"
 
 int main()
 {
@@ -21,6 +22,9 @@ int main()
         1, 1, 1;
     //std::cout<<test*test2<<std::endl;
     agent_manager am{};
+    asset_manager assetm;
+    assetm.load_assets();
+
     am.add_agent(sf::Vector2f{100, 100}, agent_type::pred);
     am.add_agent(sf::Vector2f{50, 100}, agent_type::prey);
     am.add_decision_matrix(0, test);
@@ -38,18 +42,20 @@ int main()
     //std::cout<<am.get_val<Eigen::MatrixXd>()<<std::endl;
     std::vector<sf::Vector2f> test3;
     sf::Vector2f start{0, 0};
-    evo_math::populate_line_points(test3, 10, start, 1, 45);
+    evo_math::populate_line_points(test3, 20, start, 1, 45);
     for (const auto &a : test3)
     {
-        std::cout << a.x << " " << a.y << std::endl;
+        log( a.x << " " << a.y );
     }
 
     //std::thread render_thread{&begin_render_thread};
     //render_thread.join();
     render_engine r{1600, 900, "testing"};
+    r.p_assetm = &assetm;
     actions_engine a{};
-    a.am = &am;
-    r.am = &am;
+    a.p_am = &am;
+    a.p_r_engine = &r;
+    r.p_am = &am;
 
     //std::thread render_thread{&render_engine::main_loop, &r};
     a.run = true;

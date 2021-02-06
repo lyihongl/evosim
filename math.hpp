@@ -10,7 +10,7 @@
 namespace evo_math
 {
 
-    const int RESOLUTION = 720;
+    const int RESOLUTION = 720*2;
 
     double SIN_TABLE[RESOLUTION];
     /*

@@ -5,6 +5,7 @@
 #include <string>
 #include <functional>
 #include <chrono>
+#include "render_engine.hpp"
 #include "brain.hpp"
 #include "agent_manager.hpp"
 #include "error_handling.hpp"
@@ -13,9 +14,10 @@
 class actions_engine{
     public:
     actions_engine(){};
+    render_engine* p_r_engine;
     std::vector<generic_func> function_list;
     std::vector<void*> function_args;
-    agent_manager* am;
+    agent_manager* p_am;
     status add_function(generic_func_render f, void* a); 
     bool run{false};
     void run_engine();
@@ -27,15 +29,21 @@ void actions_engine::run_engine(){
     for(;run;){
         time_now = std::chrono::system_clock::now();
         std::chrono::duration<double, std::milli> delta = time_now - time_end;
-        if(delta.count() > 16){
-            for(int i = 0; i<am->num_agents; i++){
-                std::unique_ptr<actions> a = std::move(calculate_action(am->decision_matrices[i]));
-                am->positions[i]+=sf::Vector2f(a->v_x, a->v_y);
+
+        // limit tickrate to 60/s
+        if(delta.count() > 8){
+
+            // calculate actions and add them to position for each agent
+            for(int i = 0; i<p_am->num_agents; i++){
+                std::unique_ptr<actions> a = std::move(calculate_action(p_am->decision_matrices[i]));
+                p_am->positions[i]+=sf::Vector2f(a->v_x, a->v_y);
             }
+
+            // run passed functions
             auto f_it = function_list.begin();
             auto a_it = function_args.begin();
             for(;f_it!=function_list.end() && a_it != function_args.end(); f_it++, a_it++){
-                (*f_it)(am, *a_it);
+                (*f_it)(p_am, *a_it);
             }
             time_end = std::chrono::system_clock::now();
         }

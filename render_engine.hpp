@@ -10,6 +10,7 @@
 #include "types.hpp"
 #include "logging.hpp"
 #include "math.hpp"
+#include "asset_manager.hpp"
 
 #define AGENT_SIZE 23.f
 
@@ -28,19 +29,20 @@ class render_engine{
         std::vector< generic_func_render > function_list;
         std::vector<void*> function_args;
         std::vector<sf::CircleShape> agents;
-        agent_manager* am;
+        agent_manager* p_am;
+        asset_manager* p_assetm;
         //std::vector<sf::Vector2f> circle_positions;
 
         status add_function(generic_func_render f, void* a); 
         void main_loop();
-        void draw_angled_line(const sf::Vector2f& position, const double length, const int angle);
+        void draw_angled_line(sf::RenderTarget& target, sf::Vector2f& position, const double length, const int angle);
         sf::Image& get_window_image();
         uint32_t get_pixel(unsigned int x, unsigned int y);
         //void draw_both()
 };
 
 render_engine::render_engine(int width, int height, std::string title): 
-window{sf::VideoMode(width, height), title, sf::Style::Titlebar | sf::Style::Close},
+window{sf::VideoMode(width, height), title, sf::Style::Close | sf::Style::Titlebar},
 window_contents_texture{} {
     window_contents_texture.create(window.getSize().x, window.getSize().y);
     window_contents_image.create(window.getSize().x, window.getSize().y);
@@ -57,34 +59,69 @@ window_contents_texture{} {
 
 void render_engine::main_loop(){
     int counter = 0;
-    while (window.isOpen()) {
+
+    std::chrono::time_point<std::chrono::system_clock> time_now = std::chrono::system_clock::now();
+    std::chrono::time_point<std::chrono::system_clock> time_end = std::chrono::system_clock::now();
+    std::chrono::time_point<std::chrono::system_clock> time_end_fps = std::chrono::system_clock::now();
+    
+    int frames = 0, fps = 0;
+    sf::Text fps_text;
+    //sf::Font font;
+    //if(!font.loadFromFile("./assets/fonts/times.ttf")){
+    //    return;
+    //}
+    fps_text.setFont(p_assetm->font_map["times"]);
+    fps_text.setFillColor(sf::Color::Red);
+    fps_text.setCharacterSize(20);
+
+
+
+    for (;window.isOpen();) {
         sf::Event event;
-        while (window.pollEvent(event)) {
-            std::cout << "Polling event loop" << std::endl;
+        for (;window.pollEvent(event);) {
             if (event.type == sf::Event::Closed)
                 window.close();
         }
 
-        window.clear();
+        time_now = std::chrono::system_clock::now();
+        std::chrono::duration<double, std::milli> delta = time_now - time_end;
+        std::chrono::duration<double, std::milli> delta_second = time_now - time_end_fps;
 
-        sf::CircleShape template_circle(AGENT_SIZE);
-        template_circle.setOrigin(AGENT_SIZE, AGENT_SIZE);
-        //for(auto const& it: circle_positions){
-            //template_circle.setPosition(it);
-            //window.draw(template_circle);
-        //}
-        //log_err("here");
-        for(int i = 0; i<am->num_agents; i++){
-            if(am->types[i] == agent_type::pred)
-                template_circle.setFillColor(sf::Color::Red);
-            else
-                template_circle.setFillColor(sf::Color::Green);
-            template_circle.setPosition(am->positions[i]);
-            log("Postion"<<" "<<(am->positions[i].x)<<" "<<(am->positions[i].y));
-            //std::cout<<"position"
-            window.draw(template_circle);
-            window_contents_texture.draw(template_circle);
-            draw_angled_line(am->positions[i], 50, evo_math::normalize_angle(45));
+        if(delta_second.count()>1000){
+            fps = frames;
+            //std::cout << "frames: "<<frames<<std::endl;
+            frames = 0;
+            time_end_fps = std::chrono::system_clock::now();
+        }
+
+        if(delta.count() > 16){
+            frames++;
+            window.clear();
+            fps_text.setString("fps: "+std::to_string(fps));
+            fps_text.setOrigin(sf::Vector2f{-20, 0});
+            window.draw(fps_text);
+
+            sf::CircleShape template_circle(AGENT_SIZE);
+            template_circle.setOrigin(AGENT_SIZE, AGENT_SIZE);
+            //for(auto const& it: circle_positions){
+                //template_circle.setPosition(it);
+                //window.draw(template_circle);
+            //}
+            //log_err("here");
+            for(int i = 0; i<p_am->num_agents; i++){
+                if(p_am->types[i] == agent_type::pred)
+                    template_circle.setFillColor(sf::Color::Red);
+                else
+                    template_circle.setFillColor(sf::Color::Green);
+                template_circle.setPosition(p_am->positions[i]);
+                //log("Postion"<<" "<<(am->positions[i].x)<<" "<<(am->positions[i].y));
+                //std::cout<<"position"
+                window.draw(template_circle);
+                window_contents_texture.draw(template_circle);
+                draw_angled_line(window, p_am->positions[i], 50, evo_math::normalize_angle(90));
+            }
+            window.display();
+            time_end = std::chrono::system_clock::now();
         }
         //log_err("here");
 
@@ -101,7 +138,6 @@ void render_engine::main_loop(){
         //window_contents_texture.update(window);
         //std::cout<<"pixels: " <<window_contents_texture.copyToImage().getPixel(100, 100).toInteger()<<std::endl;
 
-        window.display();
 
     }
 }
@@ -111,13 +147,13 @@ status render_engine::add_function(generic_func_render f, void* a){
     return status::success;
 }
 
-void render_engine::draw_angled_line(const sf::Vector2f& position, const double length, const int angle){
+void render_engine::draw_angled_line(sf::RenderTarget& target, sf::Vector2f& position, const double length, const int angle){
     sf::Vector2f end{position.x+evo_math::cos(angle)*length, position.y-evo_math::sin(angle)*length};
     sf::Vertex line[] = {
         position,
         end
     };
-    window.draw(line, 2, sf::Lines);
+    target.draw(line, 2, sf::Lines);
 }
 sf::Image& render_engine::get_window_image(){
     window_contents_image = window_contents_texture.getTexture().copyToImage();
