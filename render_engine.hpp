@@ -80,6 +80,7 @@ void render_engine::main_loop(){
         if(delta.count() > 16){
             frames++;
             window.clear();
+            window_contents_texture.clear();
             fps_text.setString("FPS: "+std::to_string(fps));
             fps_text.setOrigin(sf::Vector2f{-20, 0});
             window.draw(fps_text);
@@ -100,6 +101,8 @@ void render_engine::main_loop(){
                 draw_angled_line(window, p_am->positions[i], 50, evo_math::normalize_angle(p_am->angles[i]+270));
             }
             window.display();
+            window_contents_texture.display();
+            //log((int)window_contents_texture.getTexture().copyToImage().getPixel(100, 100).r);
             time_end = std::chrono::system_clock::now();
         }
     }
@@ -125,4 +128,6 @@ sf::Image& render_engine::get_window_image(){
 
 uint32_t render_engine::get_pixel(unsigned int x, unsigned int y){
     auto color = get_window_image().getPixel(x, y);
+    //log((int)color.r);
+    return color.toInteger();
 }
