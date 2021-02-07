@@ -24,21 +24,17 @@ class render_engine{
         sf::RenderTexture window_contents_texture;
         sf::Image window_contents_image;
 
-        //void render_agents(std::vector<position> &positions);
-
         std::vector< generic_func_render > function_list;
         std::vector<void*> function_args;
         std::vector<sf::CircleShape> agents;
         agent_manager* p_am;
         asset_manager* p_assetm;
-        //std::vector<sf::Vector2f> circle_positions;
 
         status add_function(generic_func_render f, void* a); 
         void main_loop();
         void draw_angled_line(sf::RenderTarget& target, sf::Vector2f& position, const double length, const int angle);
         sf::Image& get_window_image();
         uint32_t get_pixel(unsigned int x, unsigned int y);
-        //void draw_both()
 };
 
 render_engine::render_engine(int width, int height, std::string title): 
@@ -46,16 +42,8 @@ window{sf::VideoMode(width, height), title, sf::Style::Close | sf::Style::Titleb
 window_contents_texture{} {
     window_contents_texture.create(window.getSize().x, window.getSize().y);
     window_contents_image.create(window.getSize().x, window.getSize().y);
-    //std::cout<<"texture size: "<<window_contents_texture.getSize().x<<std::endl;
     window.setActive(false);
 };
-
-//void render_engine::render_agents(std::vector<position> &positions){
-//    //render circles based on position
-//    for(auto& pos: positions){
-//        
-//    }
-//}
 
 void render_engine::main_loop(){
     int counter = 0;
@@ -66,10 +54,6 @@ void render_engine::main_loop(){
     
     int frames = 0, fps = 0;
     sf::Text fps_text;
-    //sf::Font font;
-    //if(!font.loadFromFile("./assets/fonts/times.ttf")){
-    //    return;
-    //}
     fps_text.setFont(p_assetm->font_map["times"]);
     fps_text.setFillColor(sf::Color::Red);
     fps_text.setCharacterSize(20);
@@ -89,7 +73,6 @@ void render_engine::main_loop(){
 
         if(delta_second.count()>1000){
             fps = frames;
-            //std::cout << "frames: "<<frames<<std::endl;
             frames = 0;
             time_end_fps = std::chrono::system_clock::now();
         }
@@ -97,48 +80,28 @@ void render_engine::main_loop(){
         if(delta.count() > 16){
             frames++;
             window.clear();
-            fps_text.setString("fps: "+std::to_string(fps));
+            fps_text.setString("FPS: "+std::to_string(fps));
             fps_text.setOrigin(sf::Vector2f{-20, 0});
             window.draw(fps_text);
 
             sf::CircleShape template_circle(AGENT_SIZE);
             template_circle.setOrigin(AGENT_SIZE, AGENT_SIZE);
-            //for(auto const& it: circle_positions){
-                //template_circle.setPosition(it);
-                //window.draw(template_circle);
-            //}
-            //log_err("here");
             for(int i = 0; i<p_am->num_agents; i++){
                 if(p_am->types[i] == agent_type::pred)
                     template_circle.setFillColor(sf::Color::Red);
                 else
                     template_circle.setFillColor(sf::Color::Green);
                 template_circle.setPosition(p_am->positions[i]);
-                //log("Postion"<<" "<<(am->positions[i].x)<<" "<<(am->positions[i].y));
-                //std::cout<<"position"
                 window.draw(template_circle);
                 window_contents_texture.draw(template_circle);
-                draw_angled_line(window, p_am->positions[i], 50, evo_math::normalize_angle(90));
+                draw_angled_line(window, p_am->positions[i], 50, evo_math::normalize_angle(p_am->angles[i]));
+                draw_angled_line(window, p_am->positions[i], 50, evo_math::normalize_angle(p_am->angles[i]+90));
+                draw_angled_line(window, p_am->positions[i], 50, evo_math::normalize_angle(p_am->angles[i]+180));
+                draw_angled_line(window, p_am->positions[i], 50, evo_math::normalize_angle(p_am->angles[i]+270));
             }
             window.display();
             time_end = std::chrono::system_clock::now();
         }
-        //log_err("here");
-
-        /*
-        auto f_it = function_list.begin();
-        auto a_it = function_args.begin();
-
-        for(;f_it!=function_list.end() && a_it != function_args.end(); f_it++, a_it++){
-            (*f_it)(window, am, *a_it);
-        }
-        */
-
-        //can multithread here
-        //window_contents_texture.update(window);
-        //std::cout<<"pixels: " <<window_contents_texture.copyToImage().getPixel(100, 100).toInteger()<<std::endl;
-
-
     }
 }
 status render_engine::add_function(generic_func_render f, void* a){

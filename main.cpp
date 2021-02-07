@@ -42,7 +42,7 @@ int main()
     //std::cout<<am.get_val<Eigen::MatrixXd>()<<std::endl;
     std::vector<sf::Vector2f> test3;
     sf::Vector2f start{0, 0};
-    evo_math::populate_line_points(test3, 20, start, 1, 45);
+    evo_math::populate_line_points(test3, 20, start, 50, 45);
     for (const auto &a : test3)
     {
         log( a.x << " " << a.y );
