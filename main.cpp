@@ -1,18 +1,21 @@
-#define WINDOWS
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <Eigen/Dense>
 #include <thread>
+#include <memory>
+#include "omni.hpp"
 #include "agent_manager.hpp"
 #include "render_engine.hpp"
 #include "brain.hpp"
 #include "actions_engine.hpp"
 #include "math.hpp"
 #include "asset_manager.hpp"
+#include "threading_engine.hpp"
 
 int main()
 {
+    //std:: cout << (-400 % 360) << std::endl;
     evo_math::init_trig_table();
     Eigen::MatrixXd test(1, 3);
     Eigen::MatrixXd test2(3, 3);
@@ -21,17 +24,17 @@ int main()
         1, 5, 1,
         1, 1, 1;
     //std::cout<<test*test2<<std::endl;
-    agent_manager am{};
+    std::unique_ptr<agent_manager> am = std::unique_ptr<agent_manager>(new agent_manager{});
     asset_manager assetm;
     assetm.load_assets();
 
-    am.add_agent(sf::Vector2f{100, 100}, agent_type::pred);
-    am.add_agent(sf::Vector2f{50, 100}, agent_type::prey);
-    am.add_decision_matrix(0, test);
-    am.add_decision_matrix(0, test2);
+    am -> add_agent(sf::Vector2f{100, 100}, agent_type::pred);
+    am -> add_agent(sf::Vector2f{50, 50}, agent_type::prey);
+    am -> add_decision_matrix(0, test);
+    am -> add_decision_matrix(0, test2);
 
-    am.add_decision_matrix(1, test);
-    am.add_decision_matrix(1, test2);
+    am -> add_decision_matrix(1, test);
+    am -> add_decision_matrix(1, test2);
     //for(int i = 0; i<evo_math::RESOLUTION; i++){
     //    std::cout<<evo_math::sin(i)<<" "<<evo_math::cos(i)<<std::endl;
     //}
@@ -50,12 +53,17 @@ int main()
 
     //std::thread render_thread{&begin_render_thread};
     //render_thread.join();
-    render_engine r{1600, 900, "testing"};
+    omni_sight os;
+    render_engine r{1600, 900, "testing", os};
     r.p_assetm = &assetm;
-    actions_engine a{};
-    a.p_am = &am;
-    a.p_r_engine = &r;
-    r.p_am = &am;
+    actions_engine a{os};
+    os.ae = &a;
+    os.re = &r;
+    os.am = am.get();
+    //a.p_am = am.get();
+    //a.p_r_engine = &r;
+    //r.ae = &a;
+    //r.p_am = am.get();
 
     //std::thread render_thread{&render_engine::main_loop, &r};
     a.run = true;
