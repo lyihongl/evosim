@@ -12,6 +12,7 @@
 #include "math.hpp"
 #include "asset_manager.hpp"
 #include "threading_engine.hpp"
+#include "MLP.hpp"
 
 int main()
 {
@@ -28,13 +29,17 @@ int main()
     asset_manager assetm;
     assetm.load_assets();
 
-    am -> add_agent(sf::Vector2f{200, 200}, sf::Color(255, 0, 0), 180);
-    am -> add_agent(sf::Vector2f{50, 100}, sf::Color(0, 255, 0), 45);
-    am -> add_decision_matrix(0, test);
-    am -> add_decision_matrix(0, test2);
+    Eigen::ArrayXi layers(3);
+    layers << 2, 6, 1;
+    //MLP m(layers, 1);
 
-    am -> add_decision_matrix(1, test);
-    am -> add_decision_matrix(1, test2);
+    am -> add_agent(sf::Vector2f{200, 200}, sf::Color(255, 0, 0), MLP(layers, 1), 180);
+    am -> add_agent(sf::Vector2f{50, 100}, sf::Color(0, 255, 0), MLP(layers, 1), 45);
+    //am -> add_decision_matrix(0, test);
+    //am -> add_decision_matrix(0, test2);
+
+    //am -> add_decision_matrix(1, test);
+    //am -> add_decision_matrix(1, test2);
     //for(int i = 0; i<evo_math::RESOLUTION; i++){
     //    std::cout<<evo_math::sin(i)<<" "<<evo_math::cos(i)<<std::endl;
     //}

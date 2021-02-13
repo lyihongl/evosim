@@ -1,3 +1,4 @@
+#pragma once
 #include <Eigen/Dense>
 #include <vector>
 #include "logging.hpp"
@@ -26,4 +27,19 @@ ArrayXn MLP::eval(ArrayXn input){
     outputs.clear();
     inputs.clear();
     input.conservativeResize(layers[0] + 1);
+    input(layers[0]) = 1;
+    inputs.push_back(input);
+    for(int i = 0; i<weights.size(); i++){
+        ArrayXn nets = weights[i]*input.matrix();
+        ArrayXn activations = 1/(1+(-nets).exp());
+        outputs.push_back(activations);
+        activations.conservativeResize(layers[i+1]+1);
+        activations(layers[i+1]) = 1;
+        inputs.push_back(activations);
+        input = activations;
+    }
+
+    ArrayXn ret = outputs.back();
+
+    return ret;
 }

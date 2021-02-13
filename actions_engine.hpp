@@ -64,12 +64,12 @@ void actions_engine::run_engine() {
                     float atan = std::atan2(-pos.y, pos.x) * 180 / M_PI;
                     //if(atan < 0) atan += 360;
                     float ang_diff = os.am->angles[i] - atan;
-                    if(std::abs(ang_diff) > 180) ang_diff = 360 - std::abs(ang_diff);
+                    if (std::abs(ang_diff) > 180) ang_diff = 360 - std::abs(ang_diff);
                     ang_diff = std::abs(ang_diff);
-                    if(ang_diff < os.am->fovs[i]){
-                        log(i<<" working: "<<ang_diff);
+                    if (ang_diff < os.am->fovs[i]) {
+                        log(i << " working: " << ang_diff);
                     }
-                    if(i == 0){
+                    if (i == 0) {
                         os.am->positions[i] += {0, -0.5};
                     }
                     //log("atan: "<<atan <<" "<<ang_diff);
