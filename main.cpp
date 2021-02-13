@@ -46,6 +46,8 @@ int main()
     std::vector<sf::Vector2f> test3;
     sf::Vector2f start{0, 0};
     evo_math::populate_line_points(test3, 20, start, 50, 45);
+    log("angle test: "<< evo_math::angle_between(45, 350, 0));
+    log("angle test: "<< evo_math::angle_between(45, 15, 0));
     for (const auto &a : test3)
     {
         log( a.x << " " << a.y );

@@ -6,6 +6,7 @@
 #include <functional>
 #include <chrono>
 #include <cmath>
+#include "math.hpp"
 #include "brain.hpp"
 #include "agent_manager.hpp"
 #include "error_handling.hpp"
@@ -57,7 +58,13 @@ void actions_engine::run_engine(){
                         //log( "i: " <<i <<" "<< pos.x << " " << pos.y );
                         float langle = os.am -> angles[i]+os.am->fovs[i];
                         float rangle = os.am -> angles[i]-os.am->fovs[i];
-                        log(pos.x <<" "<<-pos.y <<" "<<std::atan2(-pos.y, pos.x)*180/M_PI);
+
+                        //log(pos.x <<" "<<-pos.y <<" "<<std::atan2(-pos.y, pos.x)*180/M_PI);
+                        float atan = std::atan2(-pos.y, pos.x)*180/M_PI;
+                        if(evo_math::angle_between(langle, rangle, atan)){
+                            os.am -> positions[i].x++;
+                        }
+                        //if(atan <= langle && atan >=)
                         //log(std::atan(pos.y/pos.x));
                     }
                 }

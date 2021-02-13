@@ -161,7 +161,7 @@ status render_engine::add_function(generic_func_render f, void *a) {
 void render_engine::draw_angled_line(sf::RenderTarget &target, const sf::Vector2f &position, const double length, const int angle) {
     //angle = evo_math::normalize_angle(angle);
     //sf::Vector2f end{position.x + evo_math::cos(evo_math::normalize_angle(angle)) * length, position.y - evo_math::sin(evo_math::normalize_angle(angle)) * length};
-    sf::Vector2f end{position.x + evo_math::cos(evo_math::normalize_angle(angle)) * length, position.y - evo_math::sin(evo_math::normalize_angle(angle)) * length};
+    sf::Vector2f end{position.x + evo_math::cos(angle) * length, position.y - evo_math::sin(angle) * length};
     sf::Vertex line[] = {
         position,
         end};
