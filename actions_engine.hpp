@@ -52,12 +52,12 @@ void actions_engine::run_engine(){
 
             for(int i = 0; i<os.am -> num_agents; i++){
                 for(int j = 0; j<os.am -> num_agents; j++){
-                    if(i == 0 && i != j){
+                    if(i != j){
                         sf::Vector2f pos = os.am -> positions[j] - os.am -> positions[i];
                         //log( "i: " <<i <<" "<< pos.x << " " << pos.y );
                         float langle = os.am -> angles[i]+os.am->fovs[i];
                         float rangle = os.am -> angles[i]-os.am->fovs[i];
-                        //log(pos.x <<" "<<-pos.y <<" "<<std::atan2(-pos.y, pos.x)*180/M_PI);
+                        log(pos.x <<" "<<-pos.y <<" "<<std::atan2(-pos.y, pos.x)*180/M_PI);
                         //log(std::atan(pos.y/pos.x));
                     }
                 }

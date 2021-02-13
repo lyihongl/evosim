@@ -28,8 +28,8 @@ int main()
     asset_manager assetm;
     assetm.load_assets();
 
-    am -> add_agent(sf::Vector2f{100, 100}, agent_type::pred);
-    am -> add_agent(sf::Vector2f{50, 50}, agent_type::prey);
+    am -> add_agent(sf::Vector2f{200, 100}, sf::Color(255, 0, 0));
+    am -> add_agent(sf::Vector2f{50, 100}, sf::Color(0, 255, 0));
     am -> add_decision_matrix(0, test);
     am -> add_decision_matrix(0, test2);
 

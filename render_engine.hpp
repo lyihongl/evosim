@@ -129,10 +129,11 @@ void render_engine::main_loop() {
             sf::CircleShape template_circle(AGENT_SIZE);
             template_circle.setOrigin(AGENT_SIZE, AGENT_SIZE);
             for (int i = 0; i < os.am->num_agents; i++) {
-                if (os.am->types[i] == agent_type::pred)
-                    template_circle.setFillColor(sf::Color::Red);
-                else
-                    template_circle.setFillColor(sf::Color::Green);
+                //if (os.am->types[i] == agent_type::pred)
+                //    template_circle.setFillColor(sf::Color::Red);
+                //else
+                //    template_circle.setFillColor(sf::Color::Green);
+                template_circle.setFillColor(os.am->colors[i]);
                 template_circle.setPosition(os.am->positions[i]);
                 window.draw(template_circle);
                 ae_texture.draw(template_circle);
