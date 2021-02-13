@@ -28,8 +28,8 @@ int main()
     asset_manager assetm;
     assetm.load_assets();
 
-    am -> add_agent(sf::Vector2f{200, 100}, sf::Color(255, 0, 0));
-    am -> add_agent(sf::Vector2f{50, 100}, sf::Color(0, 255, 0));
+    am -> add_agent(sf::Vector2f{200, 200}, sf::Color(255, 0, 0), 180);
+    am -> add_agent(sf::Vector2f{50, 100}, sf::Color(0, 255, 0), 45);
     am -> add_decision_matrix(0, test);
     am -> add_decision_matrix(0, test2);
 
@@ -46,8 +46,8 @@ int main()
     std::vector<sf::Vector2f> test3;
     sf::Vector2f start{0, 0};
     evo_math::populate_line_points(test3, 20, start, 50, 45);
-    log("angle test: "<< evo_math::angle_between(45, 350, 0));
-    log("angle test: "<< evo_math::angle_between(45, 15, 0));
+    log("angle test: "<< evo_math::angle_between(210, 170, 180));
+    log("angle test: "<< evo_math::angle_between(45, -270, 46));
     for (const auto &a : test3)
     {
         log( a.x << " " << a.y );

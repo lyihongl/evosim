@@ -6,17 +6,23 @@
 typedef Eigen::Matrix<double, Eigen::Dynamic, 1> VectorXn;
 typedef Eigen::Array <double, Eigen::Dynamic, 1> ArrayXn;
 
-struct mnet{
+struct MLP{
     Eigen::ArrayXi layers;
     std::vector<Eigen::MatrixXd> weights;
     std::vector<VectorXn> outputs;
     std::vector<VectorXn> inputs;
 
-    mnet(Eigen::ArrayXi layers, double rval);
+    MLP (Eigen::ArrayXi layers, double rval);
     ArrayXn eval(ArrayXn input);
 };
 
-ArrayXn mnet::eval(ArrayXn input){
+MLP::MLP (Eigen::ArrayXi layers, double rval){
+    for(std::size_t i = 1; i<layers.size(); i++){
+        weights.push_back(Eigen::MatrixXd::Random(layers[i], layers[i-1]+1)*rval);
+    }
+}
+
+ArrayXn MLP::eval(ArrayXn input){
     outputs.clear();
     inputs.clear();
     input.conservativeResize(layers[0] + 1);

@@ -2,15 +2,24 @@
 #include <Eigen/Dense>
 #include <cmath>
 #include <iostream>
-#include <cmath>
 
 #ifndef M_PI
 #define M_PI (3.14159265358979323846)
 #endif
 
+/*
+Caches trig values in an array
+To access with integer, certain int resolution is used, ie: f: int -> int, resolution -> 360 (resolution uniformly mapped to a value between 0 and 360)
+All functions designed to take value between 0 and 360, which the function will then normalize to our resolution for use in the cached array
+*/
+
 namespace evo_math {
 
-const int RESOLUTION = 720 * 4;
+enum angle_comp { in,
+                  cwof,
+                  ccwof };
+
+const int RESOLUTION = 360 * 8;
 
 double SIN_TABLE[RESOLUTION];
 double ARCSIN_TABLE[RESOLUTION];
@@ -25,8 +34,8 @@ Eigen::MatrixXd& mat_fast_sigmoid(Eigen::MatrixXd& a){
 }
 */
 
-float pythagoras(double a, double b){
-    return std::sqrt((float)(a*a+b*b));
+float abs_dist(double a, double b) {
+    return std::sqrt((float)(a * a + b * b));
 }
 
 void init_trig_table() {
@@ -63,20 +72,8 @@ void populate_line_points(std::vector<sf::Vector2f> &list, std::size_t points, s
     }
 }
 
-bool angle_between(float langle, float rangle, float comp){
-    if(normalize_angle(langle) % RESOLUTION > RESOLUTION/2){
-        langle = -normalize_angle(langle) % RESOLUTION + RESOLUTION/2;
-    }
-    if(normalize_angle(rangle) % RESOLUTION > RESOLUTION/2){
-        rangle = -normalize_angle(rangle) % RESOLUTION + RESOLUTION/2;
-    }
-    comp = normalize_angle(comp);
-    return (comp <= langle && comp >= rangle);
-    //int lquad, rquad;
-    //lquad = (int)langle/90+1;
-    //rquad = (int)langle/90+1;
-    //log("lquad: "<< lquad);
-    //std :: cout << lquad << std::
+bool angle_between(float langle, float rangle, float comp) {
+    return fmod(langle - rangle, 360) >= fmod(langle-comp, 360);
 }
 
 };  // namespace evo_math
