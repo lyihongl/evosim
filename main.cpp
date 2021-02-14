@@ -16,6 +16,7 @@
 
 int main()
 {
+    srand((unsigned int) time(0));
     //std:: cout << (-400 % 360) << std::endl;
     evo_math::init_trig_table();
     Eigen::MatrixXd test(1, 3);
@@ -30,11 +31,21 @@ int main()
     assetm.load_assets();
 
     Eigen::ArrayXi layers(3);
-    layers << 2, 6, 1;
-    //MLP m(layers, 1);
+    layers << 3, 6, 2;
+
+    MLP m(layers, 1);
+    ArrayXn input(3);
+    input << 1, 2, 3;
+    //input.conservativeResize(layers[0]+1);
+    evo_math::print_vector("WEIGHTS", m.weights);
+    //std::cout << m.eval(input) << std::endl;
+    std::cout << m.eval(input) << std::endl;
+    //evo_math::print_vector("OUTPUT", m.eval(input));
+    //ArrayXn input;
+    //m.eval();
 
     am -> add_agent(sf::Vector2f{200, 200}, sf::Color(255, 0, 0), MLP(layers, 1), 180);
-    am -> add_agent(sf::Vector2f{50, 100}, sf::Color(0, 255, 0), MLP(layers, 1), 45);
+    am -> add_agent(sf::Vector2f{300, 300}, sf::Color(0, 255, 0), MLP(layers, 1), 45);
     //am -> add_decision_matrix(0, test);
     //am -> add_decision_matrix(0, test2);
 

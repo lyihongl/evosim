@@ -18,6 +18,7 @@ struct MLP{
 };
 
 MLP::MLP (Eigen::ArrayXi layers, double rval){
+    this -> layers = layers;
     for(std::size_t i = 1; i<layers.size(); i++){
         weights.push_back(Eigen::MatrixXd::Random(layers[i], layers[i-1]+1)*rval);
     }
@@ -26,8 +27,12 @@ MLP::MLP (Eigen::ArrayXi layers, double rval){
 ArrayXn MLP::eval(ArrayXn input){
     outputs.clear();
     inputs.clear();
+    //log("a");
+    //log(layers[0]);
     input.conservativeResize(layers[0] + 1);
+    //log("a");
     input(layers[0]) = 1;
+    //log("a");
     inputs.push_back(input);
     for(int i = 0; i<weights.size(); i++){
         ArrayXn nets = weights[i]*input.matrix();

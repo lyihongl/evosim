@@ -53,6 +53,9 @@ void actions_engine::run_engine() {
         ticks++;
 
         for (int i = 0; i < os.am->num_agents; i++) {
+            os.am->eye_input_b[i] = 0;
+            os.am->eye_input_g[i] = 0;
+            os.am->eye_input_r[i] = 0;
             for (int j = 0; j < os.am->num_agents; j++) {
                 if (i != j) {
                     sf::Vector2f pos = os.am->positions[j] - os.am->positions[i];
@@ -67,39 +70,27 @@ void actions_engine::run_engine() {
                     if (std::abs(ang_diff) > 180) ang_diff = 360 - std::abs(ang_diff);
                     ang_diff = std::abs(ang_diff);
                     if (ang_diff < os.am->fovs[i]) {
-                        log(i << " working: " << ang_diff);
+                        os.am->eye_input_b[i] = os.am->colors[j].b;
+                        os.am->eye_input_g[i] = os.am->colors[j].g;
+                        os.am->eye_input_r[i] = os.am->colors[j].r;
+                        //log(i << " working: " << ang_diff);
                     }
-                    if (i == 0) {
-                        os.am->positions[i] += {0, -0.5};
-                    }
-                    //log("atan: "<<atan <<" "<<ang_diff);
-                    //log("langle: "<<langle <<" rangle: "<<rangle <<" atan: "<<atan);
-                    //if ( == evo_math::angle_comp::in) {
-                    //    //sf::Color c = os.am->colors[j];
-                    //    //log((int)c.r<<" "<<(int)c.g <<" "<< (int)c.b);
-                    //    os.am -> angles[i]+=0.09;
+                    //if (i == 0) {
+                    //    os.am->positions[i] += {0, -0.5};
                     //}
-                    //log(evo_math::angle_between(langle, rangle, atan));
-                    //switch (evo_math::angle_between(langle, rangle, atan)) {
-                    //    case evo_math::angle_comp::in:
-                    //        log(i<<"in");
-                    //        break;
-                    //    case evo_math::angle_comp::ccwof:
-                    //        log(i<<"ccwof");
-                    //        os.am->angles[i] = fmod(os.am->angles[i] - 0.5, 360);
-                    //        break;
-                    //    case evo_math::angle_comp::cwof:
-                    //        log(i<<"cwof")
-                    //        os.am->angles[i] = fmod(os.am->angles[i] + 0.5, 360);
-                    //        break;
-                    //    default:
-                    //        break;
-                    // }
-                    //os.am->angles[i] += omega;
-                    //if(atan <= langle && atan >=)
-                    //log(std::atan(pos.y/pos.x));
                 }
             }
+            ArrayXn input(3);
+            input << os.am->eye_input_b[i], os.am->eye_input_g[i], os.am->eye_input_r[i];
+            ArrayXn res = os.am->MLPs[i].eval(input);
+            os.am->angles[i] = fmod(os.am->angles[i] + res[1], 360);
+
+            if (os.am->eye_input_b[i] != 0 || os.am->eye_input_g[i] != 0 || os.am->eye_input_r[i] != 0) {
+                log((int)os.am->eye_input_b[i] << " " << (int)os.am->eye_input_g[i] << " " << (int)os.am->eye_input_r[i]);
+                log("res: " << res[1] << " " << os.am->positions[i].x << " " << os.am->positions[i].y);
+            }
+            os.am->positions[i] += {res[0] * evo_math::cos(os.am->angles[i]), res[0] * evo_math::sin(os.am->angles[i])};
+            //log(res);
         }
 
         //const auto &window_img = window_texture.getTexture().copyToImage();

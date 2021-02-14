@@ -2,6 +2,7 @@
 #include <Eigen/Dense>
 #include <cmath>
 #include <iostream>
+#include <vector>
 
 #ifndef M_PI
 #define M_PI (3.14159265358979323846)
@@ -74,6 +75,21 @@ void populate_line_points(std::vector<sf::Vector2f> &list, std::size_t points, s
 
 bool angle_between(float langle, float rangle, float comp) {
     return fmod(langle - rangle, 360) >= fmod(langle-comp, 360);
+}
+
+template <typename T>
+void print_vector(const char* name, const std::vector<T> &v) {
+  std::cout<<name<<":"<<std::endl;
+  for(size_t i=0; i<v.size(); i++) {
+    std::cout<<i<<":"<<std::endl;
+    std::cout<<v[i]<<std::endl;
+  }
+}
+
+template <typename T>
+void print(const char* name, const T &t) {
+  std::cout<<name<<":"<<std::endl;
+  std::cout<<t<<std::endl;
 }
 
 };  // namespace evo_math
