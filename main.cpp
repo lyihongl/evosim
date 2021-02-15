@@ -30,22 +30,19 @@ int main()
     asset_manager assetm;
     assetm.load_assets();
 
-    Eigen::ArrayXi layers(3);
-    layers << 3, 6, 2;
 
-    MLP m(layers, 1);
-    ArrayXn input(3);
-    input << 1, 2, 3;
+    //MLP m(layers, 1);
+    //ArrayXn input(3);
+    //input << 1, 2, 3;
     //input.conservativeResize(layers[0]+1);
-    evo_math::print_vector("WEIGHTS", m.weights);
+    //evo_math::print_vector("WEIGHTS", m.weights);
     //std::cout << m.eval(input) << std::endl;
-    std::cout << m.eval(input) << std::endl;
+    //std::cout << m.eval(input) << std::endl;
     //evo_math::print_vector("OUTPUT", m.eval(input));
     //ArrayXn input;
     //m.eval();
 
-    am -> add_agent(sf::Vector2f{200, 200}, sf::Color(255, 0, 0), MLP(layers, 1), 180);
-    am -> add_agent(sf::Vector2f{300, 300}, sf::Color(0, 255, 0), MLP(layers, 1), 45);
+    //am -> add_agent(sf::Vector2f{300, 300}, sf::Color(0, 255, 0), MLP(layers, 1), 45);
     //am -> add_decision_matrix(0, test);
     //am -> add_decision_matrix(0, test2);
 
@@ -71,7 +68,16 @@ int main()
 
     //std::thread render_thread{&begin_render_thread};
     //render_thread.join();
-    omni_sight os;
+    omni_sight os{};
+    for(int i = 0; i<1000; i+=100){
+        for(int j = 0; j<1000; j+=100){
+            am -> add_agent(sf::Vector2f{i, j}, sf::Color(std::rand()%255+1, std::rand()%255+1, std::rand()%255), MLP(os.layers, 1), std::rand()%360);
+        }
+    }
+    for(auto it = am->active_agent_set.begin(); it != am->active_agent_set.end(); it++){
+        log("it: " <<*it);
+    }
+    log("set size: "<<am->active_agent_set.size());
     render_engine r{1600, 900, "testing", os};
     r.p_assetm = &assetm;
     actions_engine a{os};

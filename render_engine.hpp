@@ -20,8 +20,6 @@
 #include "omni.hpp"
 #include "types.hpp"
 
-#define AGENT_SIZE 10.f
-
 void draw_angled_line(sf::RenderWindow &w, double theta);
 
 class render_engine {
@@ -106,7 +104,6 @@ void render_engine::main_loop() {
         ImGui::Text(std::string("FPS: " + std::to_string(fps)).c_str());
         ImGui::Text(std::string("TPS: " + std::to_string(os.ae->tps)).c_str());
 
-        ImGui::End();
         //ImGui::Begin("Color Window");
         ////ImGui::Begin("testing");
         //if (ImGui::ColorEdit3("Background color", color)) {
@@ -130,18 +127,40 @@ void render_engine::main_loop() {
         sf::CircleShape template_circle(AGENT_SIZE);
         template_circle.setOrigin(AGENT_SIZE, AGENT_SIZE);
         for (int i = 0; i < os.am->num_agents; i++) {
+            //for (auto it = os.am->active_agent_set.begin(); it != os.am->active_agent_set.end(); it++) {
+            //log("agent size: "<<os.am->num_agents <<" it: "<<*it);
+            if(os.am->active_agent_set.find(i) == os.am->active_agent_set.end()) continue;
+            log("a: " << i);
+            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(ImColor(os.am->colors[i].r, os.am->colors[i].g, os.am->colors[i].b)));
+            log("b");
+            ImGui::Text(std::string("[=] ").c_str());
+            log("c");
+            ImGui::SameLine();
+            log("d");
+            ImGui::PopStyleColor();
+            log("e");
+            ImGui::Text(std::string("Agent: " + std::to_string(i) +
+                                    " Energy: " + std::to_string(os.am->energy[i]) +
+                                    " Spike: " + std::to_string(os.am->spike[i]) +
+                                    " Time Alive: " + std::to_string(os.am->time_alive[i]))
+                            .c_str());
+            log("f");
             //if (os.am->types[i] == agent_type::pred)
             //    template_circle.setFillColor(sf::Color::Red);
             //else
             //    template_circle.setFillColor(sf::Color::Green);
             template_circle.setFillColor(os.am->colors[i]);
+            log("g");
             template_circle.setPosition(os.am->positions[i]);
+            template_circle.setOutlineThickness(1);
+            template_circle.setOutlineColor(sf::Color(255, 255, 255));
             window.draw(template_circle);
             ae_texture.draw(template_circle);
             draw_angled_line(window, os.am->positions[i], 50, os.am->angles[i]);
             draw_angled_line(window, os.am->positions[i], 50, os.am->angles[i] + os.am->fovs[i]);
             draw_angled_line(window, os.am->positions[i], 50, os.am->angles[i] - os.am->fovs[i]);
         }
+        ImGui::End();
 
         ImGui::SFML::Render(window);
         window.display();

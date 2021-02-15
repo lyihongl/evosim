@@ -1,4 +1,5 @@
 #pragma once
+#include <SFML/System/Vector2.hpp>
 #include <Eigen/Dense>
 #include <cmath>
 #include <iostream>
@@ -35,8 +36,8 @@ Eigen::MatrixXd& mat_fast_sigmoid(Eigen::MatrixXd& a){
 }
 */
 
-float abs_dist(double a, double b) {
-    return std::sqrt((float)(a * a + b * b));
+float abs_dist(sf::Vector2f vec) {
+    return std::sqrt((float)(vec.x * vec.x + vec.y * vec.y));
 }
 
 void init_trig_table() {

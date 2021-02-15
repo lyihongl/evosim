@@ -1,6 +1,8 @@
 #pragma once
 #include <vector>
 #include <SFML/System/Vector2.hpp>
+#include <unordered_set>
+#include <stack>
 //#include "math2d.hpp"
 #include <Eigen/Dense>
 #include <unordered_map>
@@ -21,42 +23,93 @@ class agent_manager{
         std::vector<uint8_t> eye_input_r;
         std::vector<uint8_t> eye_input_b;
         std::vector<uint8_t> eye_input_g;
+        std::vector<float> energy;
+        std::unordered_set<std::size_t> active_agent_set;
+        std::stack<std::size_t> empty_slots_stack;
+        std::vector<bool> spike;
+        std::vector<unsigned long long> time_alive;
         //std::vector<std::unordered_map<std::string, double>> actions;
         //std::vector<agent_type> types;
         std::vector<MLP> MLPs;
         //std::vector<std::vector<Eigen::MatrixXd>> decision_matrices;
-        std::size_t add_agent(sf::Vector2f& p, sf::Color& t, MLP& m, double angle=0, double fov=20);
-        std::size_t add_agent(sf::Vector2f&& p, sf::Color&& t, MLP&& m, double angle=0, double fov=20);
+        void add_agent(sf::Vector2f& p, sf::Color& t, MLP& m, double angle=0, double fov=20);
+        void add_agent(sf::Vector2f&& p, sf::Color&& t, MLP&& m, double angle=0, double fov=20);
+        void remove_agent(std::size_t i);
         //std::size_t add_MLP(std::size_t agent, MLP& m);
         std::size_t num_agents;
 
 };
 
-std::size_t agent_manager::add_agent(sf::Vector2f& p, sf::Color& t, MLP& m, double angle, double fov ){
-    positions.push_back(p);
-    colors.push_back(t);
-    angles.push_back(angle);
-    fovs.push_back(fov);
-    MLPs.push_back(m);
-    eye_input_r.push_back(0);
-    eye_input_b.push_back(0);
-    eye_input_g.push_back(0);
-    //actions.push_back({});
-    //MLPs.push_back(std::vector<Eigen::MatrixXd>());
-    return num_agents++;
+void agent_manager::add_agent(sf::Vector2f& p, sf::Color& t, MLP& m, double angle, double fov ){
+    if(empty_slots_stack.size() == 0){
+        active_agent_set.insert(num_agents);
+        positions.push_back(p);
+        colors.push_back(t);
+        angles.push_back(angle);
+        fovs.push_back(fov);
+        MLPs.push_back(m);
+        eye_input_r.push_back(0);
+        eye_input_b.push_back(0);
+        eye_input_g.push_back(0);
+        energy.push_back(100.f);
+        spike.push_back(0);
+        time_alive.push_back(0);
+        num_agents++;
+    } else {
+        std::size_t index = empty_slots_stack.top();
+        empty_slots_stack.pop();
+        active_agent_set.insert(index);
+        positions[index] = p;
+        colors[index] = t;
+        angles[index] = angle;
+        fovs[index] = fov;
+        MLPs[index] = m;
+        eye_input_r[index] = 0;
+        eye_input_b[index] = 0;
+        eye_input_g[index] = 0;
+        energy[index] = 100.f;
+        spike[index] = 0;
+        time_alive[index] = 0;
+    }
 }
-std::size_t agent_manager::add_agent(sf::Vector2f&& p, sf::Color&& t, MLP&& m, double angle, double fov){
-    positions.push_back(p);
-    colors.push_back(t);
-    angles.push_back(angle);
-    fovs.push_back(fov);
-    MLPs.push_back(m);
-    eye_input_r.push_back(0);
-    eye_input_b.push_back(0);
-    eye_input_g.push_back(0);
-    //actions.push_back({});
-    //decision_matrices.push_back(std::vector<Eigen::MatrixXd>());
-    return num_agents++;
+void agent_manager::add_agent(sf::Vector2f&& p, sf::Color&& t, MLP&& m, double angle, double fov){
+    if(empty_slots_stack.size() == 0){
+        active_agent_set.insert(num_agents);
+        positions.push_back(p);
+        colors.push_back(t);
+        angles.push_back(angle);
+        fovs.push_back(fov);
+        MLPs.push_back(m);
+        eye_input_r.push_back(0);
+        eye_input_b.push_back(0);
+        eye_input_g.push_back(0);
+        energy.push_back(100.f);
+        spike.push_back(0);
+        time_alive.push_back(0);
+        num_agents++;
+    } else {
+        std::size_t index = empty_slots_stack.top();
+        empty_slots_stack.pop();
+        active_agent_set.insert(index);
+        positions[index] = p;
+        colors[index] = t;
+        angles[index] = angle;
+        fovs[index] = fov;
+        MLPs[index] = m;
+        eye_input_r[index] = 0;
+        eye_input_b[index] = 0;
+        eye_input_g[index] = 0;
+        energy[index] = 100.f;
+        spike[index] = 0;
+        time_alive[index] = 0;
+    }
+}
+
+void agent_manager::remove_agent(std::size_t i){
+    if(active_agent_set.find(i) == active_agent_set.end()) return;
+    empty_slots_stack.push(i);
+    active_agent_set.extract(i);
+    //return --num_agents;
 }
 //std::size_t agent_manager::add_MLP(std::size_t agent, MLP& m){
 //    //MLPs[agent].push_back(m);

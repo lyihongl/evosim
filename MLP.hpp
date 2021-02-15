@@ -14,6 +14,7 @@ struct MLP{
     std::vector<VectorXn> inputs;
 
     MLP (Eigen::ArrayXi layers, double rval);
+    MLP (const MLP& m);
     ArrayXn eval(ArrayXn input);
 };
 
@@ -22,6 +23,11 @@ MLP::MLP (Eigen::ArrayXi layers, double rval){
     for(std::size_t i = 1; i<layers.size(); i++){
         weights.push_back(Eigen::MatrixXd::Random(layers[i], layers[i-1]+1)*rval);
     }
+}
+
+MLP::MLP(const MLP& m){
+    this -> layers = m.layers;
+    this -> weights = m.weights;
 }
 
 ArrayXn MLP::eval(ArrayXn input){

@@ -37,6 +37,7 @@ void actions_engine::run_engine() {
     int ticks = 0;
     tps = 0;
     int i = 0;
+    bool sec_passed = false;
     //float omega = 0.15;
     for (; run;) {
         time_now = std::chrono::system_clock::now();
@@ -46,6 +47,7 @@ void actions_engine::run_engine() {
             tps = ticks;
             ticks = 0;
             time_end_tps = std::chrono::system_clock::now();
+            sec_passed = true;
         }
 
         // limit tickrate to 60/s
@@ -53,11 +55,21 @@ void actions_engine::run_engine() {
         ticks++;
 
         for (int i = 0; i < os.am->num_agents; i++) {
+            if (os.am->active_agent_set.find(i) == os.am->active_agent_set.end()) continue;
             os.am->eye_input_b[i] = 0;
             os.am->eye_input_g[i] = 0;
             os.am->eye_input_r[i] = 0;
+            if (sec_passed) {
+                os.am->time_alive[i] += 1;
+            }
             for (int j = 0; j < os.am->num_agents; j++) {
                 if (i != j) {
+                    float dist = evo_math::abs_dist(os.am->positions[i] - os.am->positions[j]);
+                    if ((dist < AGENT_SIZE && (os.am->spike[i] || os.am->spike[j]))) {
+                        os.am->remove_agent(j);
+                        os.am->energy[i] = (os.am->energy[i] + 20 <= 100) ? os.am->energy[i] + 20 : 100;
+                    }
+
                     sf::Vector2f pos = os.am->positions[j] - os.am->positions[i];
                     //log( "i: " <<i <<" "<< pos.x << " " << pos.y );
                     float langle = os.am->angles[i] + os.am->fovs[i];
@@ -69,10 +81,11 @@ void actions_engine::run_engine() {
                     float ang_diff = os.am->angles[i] - atan;
                     if (std::abs(ang_diff) > 180) ang_diff = 360 - std::abs(ang_diff);
                     ang_diff = std::abs(ang_diff);
+
                     if (ang_diff < os.am->fovs[i]) {
-                        os.am->eye_input_b[i] = os.am->colors[j].b;
-                        os.am->eye_input_g[i] = os.am->colors[j].g;
-                        os.am->eye_input_r[i] = os.am->colors[j].r;
+                        os.am->eye_input_b[i] += os.am->colors[j].b / dist;
+                        os.am->eye_input_g[i] += os.am->colors[j].g / dist;
+                        os.am->eye_input_r[i] += os.am->colors[j].r / dist;
                         //log(i << " working: " << ang_diff);
                     }
                     //if (i == 0) {
@@ -83,33 +96,27 @@ void actions_engine::run_engine() {
             ArrayXn input(3);
             input << os.am->eye_input_b[i], os.am->eye_input_g[i], os.am->eye_input_r[i];
             ArrayXn res = os.am->MLPs[i].eval(input);
-            os.am->angles[i] = fmod(os.am->angles[i] + res[1], 360);
+            os.am->angles[i] = fmod(os.am->angles[i] + res[1] * 15, 360);
 
-            if (os.am->eye_input_b[i] != 0 || os.am->eye_input_g[i] != 0 || os.am->eye_input_r[i] != 0) {
-                log((int)os.am->eye_input_b[i] << " " << (int)os.am->eye_input_g[i] << " " << (int)os.am->eye_input_r[i]);
-                log("res: " << res[1] << " " << os.am->positions[i].x << " " << os.am->positions[i].y);
+            //if (os.am->eye_input_b[i] != 0 || os.am->eye_input_g[i] != 0 || os.am->eye_input_r[i] != 0) {
+            //    log((int)os.am->eye_input_b[i] << " " << (int)os.am->eye_input_g[i] << " " << (int)os.am->eye_input_r[i]);
+            //    log("res: " << res[1] << " " << os.am->positions[i].x << " " << os.am->positions[i].y);
+            //}
+            os.am->energy[i] -= 0.05;
+            if (os.am->energy[i] <= 0) {
+                os.am->remove_agent(i);
+            }
+            if (os.am->empty_slots_stack.size() > 0) {
+                os.am->add_agent(sf::Vector2f{(std::rand() % 800) + 100, (std::rand() % 800) + 100}, sf::Color(std::rand() % 255, std::rand() % 255, std::rand() % 255), MLP(os.layers, 1), std::rand() % 360);
             }
             os.am->positions[i] += {res[0] * evo_math::cos(os.am->angles[i]), res[0] * evo_math::sin(os.am->angles[i])};
-            //log(res);
+
+            os.am->spike[i] = (res[2] >= 0.5) ? 1 : 0;
         }
-
-        //const auto &window_img = window_texture.getTexture().copyToImage();
-        // calculate actions and add them to position for each agent
-        //for(int i = 0; i<os.am->num_agents; i++){
-        //    std::unique_ptr<actions> a = std::move(calculate_action(os.am->decision_matrices[i]));
-        //    os.am->positions[i]+=sf::Vector2f(a->v_x/4, a->v_y/4);
+        sec_passed = (sec_passed) ? false : sec_passed;
+        //if(sec_passed) {
+        //    sec_passed = false;
         //}
-
-        // run passed functions
-        //auto f_it = function_list.begin();
-        //auto a_it = function_args.begin();
-        //for(;f_it!=function_list.end() && a_it != function_args.end(); f_it++, a_it++){
-        //    (*f_it)(os.am, *a_it);
-        //}
-
-        //p_r_engine->get_pixel(100, 100);
-        //p_r_engine->get_pixel(101, 100);
-        //p_r_engine->get_pixel(102, 100);
         time_end = std::chrono::system_clock::now();
         std::chrono::duration<double, std::milli> delta = time_now - time_end;
         using namespace std::chrono_literals;
