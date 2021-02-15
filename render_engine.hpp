@@ -20,8 +20,6 @@
 #include "omni.hpp"
 #include "types.hpp"
 
-#define AGENT_SIZE 23.f
-
 void draw_angled_line(sf::RenderWindow &w, double theta);
 
 class render_engine {
@@ -50,7 +48,8 @@ class render_engine {
 };
 
 render_engine::render_engine(int width, int height, std::string title, omni_sight &os) : os{os}, window{sf::VideoMode(width, height), title, sf::Style::Close | sf::Style::Titlebar} {
-    window.setVerticalSyncEnabled(true);
+    window.setFramerateLimit(60);
+    //window.setVerticalSyncEnabled(true);
     //window_contents_texture.create(window.getSize().x, window.getSize().y);
     //window_contents_image.create(window.getSize().x, window.getSize().y);
     window.setActive(false);
@@ -97,59 +96,80 @@ void render_engine::main_loop() {
             time_end_fps = std::chrono::system_clock::now();
         }
 
-        if (delta.count() > 16) {
-            ImGui::SFML::Update(window, delta_time_sf.restart());
-            //ImGui::SetNextWindowPos(ImVec2{0, 0});
-            ImGui::Begin("Debugging");
-            ////std::string
-            ImGui::Text(std::string("FPS: " + std::to_string(fps)).c_str());
-            ImGui::Text(std::string("TPS: " + std::to_string(os.ae->tps)).c_str());
+        //if (delta.count() > 16) {
+        ImGui::SFML::Update(window, delta_time_sf.restart());
+        //ImGui::SetNextWindowPos(ImVec2{0, 0});
+        ImGui::Begin("Debugging");
+        ////std::string
+        ImGui::Text(std::string("FPS: " + std::to_string(fps)).c_str());
+        ImGui::Text(std::string("TPS: " + std::to_string(os.ae->tps)).c_str());
 
-            ImGui::End();
-            //ImGui::Begin("Color Window");
-            ////ImGui::Begin("testing");
-            //if (ImGui::ColorEdit3("Background color", color)) {
-            //    // this code gets called if color value changes, so
-            //    // the background color is upgraded automatically!
-            //    bgColor.r = static_cast<sf::Uint8>(color[0] * 255.f);
-            //    bgColor.g = static_cast<sf::Uint8>(color[1] * 255.f);
-            //    bgColor.b = static_cast<sf::Uint8>(color[2] * 255.f);
-            //}
-            //ImGui::End();  // end window
+        //ImGui::Begin("Color Window");
+        ////ImGui::Begin("testing");
+        //if (ImGui::ColorEdit3("Background color", color)) {
+        //    // this code gets called if color value changes, so
+        //    // the background color is upgraded automatically!
+        //    bgColor.r = static_cast<sf::Uint8>(color[0] * 255.f);
+        //    bgColor.g = static_cast<sf::Uint8>(color[1] * 255.f);
+        //    bgColor.b = static_cast<sf::Uint8>(color[2] * 255.f);
+        //}
+        //ImGui::End();  // end window
 
-            frames++;
-            //window.clear();
-            window.clear(bgColor);  // fill background with color
-            ae_texture.clear();
-            //window_contents_texture.clear();
-            fps_text.setString("FPS: " + std::to_string(fps));
-            fps_text.setOrigin(sf::Vector2f{-20, 0});
-            window.draw(fps_text);
+        frames++;
+        //window.clear();
+        window.clear(bgColor);  // fill background with color
+        ae_texture.clear();
+        //window_contents_texture.clear();
+        fps_text.setString("FPS: " + std::to_string(fps));
+        fps_text.setOrigin(sf::Vector2f{-20, 0});
+        window.draw(fps_text);
 
-            sf::CircleShape template_circle(AGENT_SIZE);
-            template_circle.setOrigin(AGENT_SIZE, AGENT_SIZE);
-            for (int i = 0; i < os.am->num_agents; i++) {
-                //if (os.am->types[i] == agent_type::pred)
-                //    template_circle.setFillColor(sf::Color::Red);
-                //else
-                //    template_circle.setFillColor(sf::Color::Green);
-                template_circle.setFillColor(os.am->colors[i]);
-                template_circle.setPosition(os.am->positions[i]);
-                window.draw(template_circle);
-                ae_texture.draw(template_circle);
-                draw_angled_line(window, os.am->positions[i], 50, os.am->angles[i]);
-                draw_angled_line(window, os.am->positions[i], 50, os.am->angles[i] + os.am->fovs[i]);
-                draw_angled_line(window, os.am->positions[i], 50, os.am->angles[i] - os.am->fovs[i]);
-            }
-
-            ImGui::SFML::Render(window);
-            window.display();
-            ae_texture.display();
-            //window_contents_texture.display();
-            //window_contents_image = window_contents_texture.getTexture().copyToImage();
-            //log((int)window_contents_texture.getTexture().copyToImage().getPixel(100, 100).r);
-            time_end = std::chrono::system_clock::now();
+        sf::CircleShape template_circle(AGENT_SIZE);
+        template_circle.setOrigin(AGENT_SIZE, AGENT_SIZE);
+        for (int i = 0; i < os.am->num_agents; i++) {
+            //for (auto it = os.am->active_agent_set.begin(); it != os.am->active_agent_set.end(); it++) {
+            //log("agent size: "<<os.am->num_agents <<" it: "<<*it);
+            if(os.am->active_agent_set.find(i) == os.am->active_agent_set.end()) continue;
+            log("a: " << i);
+            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(ImColor(os.am->colors[i].r, os.am->colors[i].g, os.am->colors[i].b)));
+            log("b");
+            ImGui::Text(std::string("[=] ").c_str());
+            log("c");
+            ImGui::SameLine();
+            log("d");
+            ImGui::PopStyleColor();
+            log("e");
+            ImGui::Text(std::string("Agent: " + std::to_string(i) +
+                                    " Energy: " + std::to_string(os.am->energy[i]) +
+                                    " Spike: " + std::to_string(os.am->spike[i]) +
+                                    " Time Alive: " + std::to_string(os.am->time_alive[i]))
+                            .c_str());
+            log("f");
+            //if (os.am->types[i] == agent_type::pred)
+            //    template_circle.setFillColor(sf::Color::Red);
+            //else
+            //    template_circle.setFillColor(sf::Color::Green);
+            template_circle.setFillColor(os.am->colors[i]);
+            log("g");
+            template_circle.setPosition(os.am->positions[i]);
+            template_circle.setOutlineThickness(1);
+            template_circle.setOutlineColor(sf::Color(255, 255, 255));
+            window.draw(template_circle);
+            ae_texture.draw(template_circle);
+            draw_angled_line(window, os.am->positions[i], 50, os.am->angles[i]);
+            draw_angled_line(window, os.am->positions[i], 50, os.am->angles[i] + os.am->fovs[i]);
+            draw_angled_line(window, os.am->positions[i], 50, os.am->angles[i] - os.am->fovs[i]);
         }
+        ImGui::End();
+
+        ImGui::SFML::Render(window);
+        window.display();
+        ae_texture.display();
+        //window_contents_texture.display();
+        //window_contents_image = window_contents_texture.getTexture().copyToImage();
+        //log((int)window_contents_texture.getTexture().copyToImage().getPixel(100, 100).r);
+        time_end = std::chrono::system_clock::now();
+        //}
     }
 }
 status render_engine::add_function(generic_func_render f, void *a) {
