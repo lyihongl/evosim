@@ -28,6 +28,7 @@ class actions_engine {
     void run_engine();
     actions_engine(omni_sight &os) : os{os} {}
     int tps;
+    std::size_t longest_alive_index;
 };
 
 void actions_engine::run_engine() {
@@ -38,6 +39,8 @@ void actions_engine::run_engine() {
     tps = 0;
     int i = 0;
     bool sec_passed = false;
+    unsigned int mutate_max = 0;
+    std::size_t mutate_max_index = 0;
     //float omega = 0.15;
     for (; run;) {
         time_now = std::chrono::system_clock::now();
@@ -62,7 +65,8 @@ void actions_engine::run_engine() {
             if (sec_passed) {
                 os.am->time_alive[i] += 1;
             }
-            for (int j = 0; j < os.am->num_agents; j++) {
+            int seen = 0;
+            for (int j = 0; j < os.am->num_agents && seen < 4; j++) {
                 if (i != j) {
                     float dist = evo_math::abs_dist(os.am->positions[i] - os.am->positions[j]);
                     if ((dist < AGENT_SIZE && (os.am->spike[i] || os.am->spike[j]))) {
@@ -83,6 +87,7 @@ void actions_engine::run_engine() {
                     ang_diff = std::abs(ang_diff);
 
                     if (ang_diff < os.am->fovs[i]) {
+                        seen++;
                         os.am->eye_input_b[i] += os.am->colors[j].b / dist;
                         os.am->eye_input_g[i] += os.am->colors[j].g / dist;
                         os.am->eye_input_r[i] += os.am->colors[j].r / dist;
@@ -93,10 +98,22 @@ void actions_engine::run_engine() {
                     //}
                 }
             }
-            ArrayXn input(3);
-            input << os.am->eye_input_b[i], os.am->eye_input_g[i], os.am->eye_input_r[i];
+            ArrayXn input(6);
+            input << os.am->eye_input_b[i], os.am->eye_input_g[i], os.am->eye_input_r[i], os.am->angular_v[i], os.am->velocity[i], (int)os.am->spike[i];
+            //log("input: " << input);
             ArrayXn res = os.am->MLPs[i].eval(input);
-            os.am->angles[i] = fmod(os.am->angles[i] + res[1] * 15, 360);
+            os.am->angles[i] = fmod(os.am->angles[i] + (res[1]-0.5) * 15, 360);
+            os.am->angular_v[i] = (res[1]-0.5)*15;
+            os.am->velocity[i] = (res[0]-0.5);
+
+
+            auto it = std::max_element(os.am->time_alive.begin(), os.am->time_alive.end());
+            longest_alive_index = std::distance(os.am->time_alive.begin(), it);
+
+            //if(os.am->time_alive[i]>mutate_max){
+            //    mutate_max = os.am -> time_alive[i];
+            //    mutate_max_index = i;
+            //}
 
             //if (os.am->eye_input_b[i] != 0 || os.am->eye_input_g[i] != 0 || os.am->eye_input_r[i] != 0) {
             //    log((int)os.am->eye_input_b[i] << " " << (int)os.am->eye_input_g[i] << " " << (int)os.am->eye_input_r[i]);
@@ -109,10 +126,11 @@ void actions_engine::run_engine() {
             if (os.am->empty_slots_stack.size() > 0) {
                 os.am->add_agent(sf::Vector2f{(std::rand() % 800) + 100, (std::rand() % 800) + 100}, sf::Color(std::rand() % 255, std::rand() % 255, std::rand() % 255), MLP(os.layers, 1), std::rand() % 360);
             }
-            os.am->positions[i] += {res[0] * evo_math::cos(os.am->angles[i]), res[0] * evo_math::sin(os.am->angles[i])};
+            os.am->positions[i] += {(res[0]-0.5) * evo_math::cos(os.am->angles[i]), (res[0]-0.5) * evo_math::sin(os.am->angles[i])};
 
             os.am->spike[i] = (res[2] >= 0.5) ? 1 : 0;
         }
+        //longest_alive_index = mutate_max_index;
         sec_passed = (sec_passed) ? false : sec_passed;
         //if(sec_passed) {
         //    sec_passed = false;

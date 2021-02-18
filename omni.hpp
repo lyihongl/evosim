@@ -14,7 +14,7 @@ struct omni_sight{
         re = nullptr;
         ae = nullptr;
         am = nullptr;
-        layers << 3,6,3;
+        layers << 6,8,3;
     }
 
     omni_sight(render_engine *re, actions_engine *ae, agent_manager *am):layers(3){

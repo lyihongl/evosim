@@ -103,6 +103,7 @@ void render_engine::main_loop() {
         ////std::string
         ImGui::Text(std::string("FPS: " + std::to_string(fps)).c_str());
         ImGui::Text(std::string("TPS: " + std::to_string(os.ae->tps)).c_str());
+        ImGui::Text(std::string("Longest Alive Index: "+std::to_string(os.ae->longest_alive_index)).c_str());
 
         //ImGui::Begin("Color Window");
         ////ImGui::Begin("testing");
@@ -130,27 +131,21 @@ void render_engine::main_loop() {
             //for (auto it = os.am->active_agent_set.begin(); it != os.am->active_agent_set.end(); it++) {
             //log("agent size: "<<os.am->num_agents <<" it: "<<*it);
             if(os.am->active_agent_set.find(i) == os.am->active_agent_set.end()) continue;
-            log("a: " << i);
             ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(ImColor(os.am->colors[i].r, os.am->colors[i].g, os.am->colors[i].b)));
-            log("b");
             ImGui::Text(std::string("[=] ").c_str());
-            log("c");
             ImGui::SameLine();
-            log("d");
             ImGui::PopStyleColor();
-            log("e");
             ImGui::Text(std::string("Agent: " + std::to_string(i) +
                                     " Energy: " + std::to_string(os.am->energy[i]) +
                                     " Spike: " + std::to_string(os.am->spike[i]) +
                                     " Time Alive: " + std::to_string(os.am->time_alive[i]))
                             .c_str());
-            log("f");
+            //log("f");
             //if (os.am->types[i] == agent_type::pred)
             //    template_circle.setFillColor(sf::Color::Red);
             //else
             //    template_circle.setFillColor(sf::Color::Green);
             template_circle.setFillColor(os.am->colors[i]);
-            log("g");
             template_circle.setPosition(os.am->positions[i]);
             template_circle.setOutlineThickness(1);
             template_circle.setOutlineColor(sf::Color(255, 255, 255));
