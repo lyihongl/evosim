@@ -1,22 +1,22 @@
-#include <SFML/System.hpp>
-#include <SFML/Graphics.hpp>
-#include <iostream>
 #include <Eigen/Dense>
-#include <thread>
+#include <SFML/Graphics.hpp>
+#include <SFML/System.hpp>
+#include <iostream>
 #include <memory>
-#include "omni.hpp"
-#include "agent_manager.hpp"
-#include "render_engine.hpp"
-#include "brain.hpp"
-#include "actions_engine.hpp"
-#include "math.hpp"
-#include "asset_manager.hpp"
-#include "threading_engine.hpp"
-#include "MLP.hpp"
+#include <thread>
 
-int main()
-{
-    srand((unsigned int) time(0));
+#include "MLP.hpp"
+#include "actions_engine.hpp"
+#include "agent_manager.hpp"
+#include "asset_manager.hpp"
+#include "brain.hpp"
+#include "math.hpp"
+#include "omni.hpp"
+#include "render_engine.hpp"
+#include "threading_engine.hpp"
+
+int main() {
+    srand((unsigned int)time(0));
     //std:: cout << (-400 % 360) << std::endl;
     evo_math::init_trig_table();
     Eigen::MatrixXd test(1, 3);
@@ -29,7 +29,6 @@ int main()
     std::unique_ptr<agent_manager> am = std::unique_ptr<agent_manager>(new agent_manager{});
     asset_manager assetm;
     assetm.load_assets();
-
 
     //MLP m(layers, 1);
     //ArrayXn input(3);
@@ -59,28 +58,30 @@ int main()
     std::vector<sf::Vector2f> test3;
     sf::Vector2f start{0, 0};
     evo_math::populate_line_points(test3, 20, start, 50, 45);
-    log("angle test: "<< evo_math::angle_between(210, 170, 180));
-    log("angle test: "<< evo_math::angle_between(45, -270, 46));
-    for (const auto &a : test3)
-    {
-        log( a.x << " " << a.y );
+    log("angle test: " << evo_math::angle_between(210, 170, 180));
+    log("angle test: " << evo_math::angle_between(45, -270, 46));
+    for (const auto &a : test3) {
+        log(a.x << " " << a.y);
     }
 
     //std::thread render_thread{&begin_render_thread};
     //render_thread.join();
     omni_sight os{};
-    for(int i = 0; i<1000; i+=10){
-        for(int j = 0; j<1000; j+=100){
-            am -> add_agent(sf::Vector2f{i, j}, sf::Color(std::rand()%255+1, std::rand()%255+1, std::rand()%255), MLP(os.layers, 1), std::rand()%360);
-        }
+    am->add_agent(sf::Vector2f{100, 100}, sf::Color(123, 255, 22), MLP(os.layers, 1), std::rand() % 360);
+    //am->add_agent(sf::Vector2f{100, 0}, sf::Color(123, 0, 0), MLP(os.layers, 1), std::rand() % 360);
+    //am->add_agent(sf::Vector2f{0, 100}, sf::Color(123, 0, 0), MLP(os.layers, 1), std::rand() % 360);
+    //for(int i = 0; i<1000; i+=10){
+    //    for(int j = 0; j<1000; j+=100){
+    //        am -> add_agent(sf::Vector2f{i, j}, sf::Color(std::rand()%255+1, std::rand()%255+1, std::rand()%255), MLP(os.layers, 1), std::rand()%360);
+    //    }
+    //}
+    for (auto it = am->active_agent_set.begin(); it != am->active_agent_set.end(); it++) {
+        log("it: " << *it);
     }
-    for(auto it = am->active_agent_set.begin(); it != am->active_agent_set.end(); it++){
-        log("it: " <<*it);
-    }
-    log("set size: "<<am->active_agent_set.size());
+    log("set size: " << am->active_agent_set.size());
     render_engine r{1600, 900, "testing", os};
     r.p_assetm = &assetm;
-    actions_engine a{os};
+    actions_engine a{1600, 900, os};
     os.ae = &a;
     os.re = &r;
     os.am = am.get();

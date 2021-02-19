@@ -2,6 +2,7 @@
 #define _USE_MATH_DEFINES
 
 #include <SFML/Graphics.hpp>
+#include <SFML/OpenGL.hpp>
 #include <SFML/System/Clock.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
@@ -76,6 +77,9 @@ void render_engine::main_loop() {
 
     float color[3] = {0.f, 0.f, 0.f};
 
+    //char dat[2000*4][2000*4]{0};
+    sf::Color* dat = (sf::Color*)malloc(1600*900*sizeof(sf::Color));
+
     sf::RenderTexture &ae_texture = os.ae->window_texture;
 
     for (; window.isOpen();) {
@@ -103,7 +107,7 @@ void render_engine::main_loop() {
         ////std::string
         ImGui::Text(std::string("FPS: " + std::to_string(fps)).c_str());
         ImGui::Text(std::string("TPS: " + std::to_string(os.ae->tps)).c_str());
-        ImGui::Text(std::string("Longest Alive Index: "+std::to_string(os.ae->longest_alive_index)).c_str());
+        ImGui::Text(std::string("Longest Alive Index: " + std::to_string(os.ae->longest_alive_index)).c_str());
 
         //ImGui::Begin("Color Window");
         ////ImGui::Begin("testing");
@@ -130,7 +134,7 @@ void render_engine::main_loop() {
         for (int i = 0; i < os.am->num_agents; i++) {
             //for (auto it = os.am->active_agent_set.begin(); it != os.am->active_agent_set.end(); it++) {
             //log("agent size: "<<os.am->num_agents <<" it: "<<*it);
-            if(os.am->active_agent_set.find(i) == os.am->active_agent_set.end()) continue;
+            if (os.am->active_agent_set.find(i) == os.am->active_agent_set.end()) continue;
             ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(ImColor(os.am->colors[i].r, os.am->colors[i].g, os.am->colors[i].b)));
             ImGui::Text(std::string("[=] ").c_str());
             ImGui::SameLine();
@@ -154,12 +158,28 @@ void render_engine::main_loop() {
             draw_angled_line(window, os.am->positions[i], 50, os.am->angles[i]);
             draw_angled_line(window, os.am->positions[i], 50, os.am->angles[i] + os.am->fovs[i]);
             draw_angled_line(window, os.am->positions[i], 50, os.am->angles[i] - os.am->fovs[i]);
+            ;
         }
         ImGui::End();
 
         ImGui::SFML::Render(window);
+
+        glBindTexture(GL_TEXTURE_2D, ae_texture.getTexture().getNativeHandle());
+        glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, dat);
+        //log((int)(*((sf::Color *)(dat + (1600-100) * 900 * 4))).r);
+
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+
         window.display();
-        ae_texture.display();
+        //ae_texture.display();
+        //for(int i = 0; i<900; i++){
+        //    for(int j = 0; j<1600; j++){
+        //        log(j<<" "<<i<<" "<<(int)dat[i*1600+j].r<<" "<<(int)dat[i*1600+j].g<<" "<<(int)dat[i*1600+j].b);
+        //    }
+        //}
+        //break;
+
         //window_contents_texture.display();
         //window_contents_image = window_contents_texture.getTexture().copyToImage();
         //log((int)window_contents_texture.getTexture().copyToImage().getPixel(100, 100).r);
