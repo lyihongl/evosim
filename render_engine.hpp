@@ -80,7 +80,7 @@ void render_engine::main_loop() {
     //char dat[2000*4][2000*4]{0};
     sf::Color* dat = (sf::Color*)malloc(1600*900*sizeof(sf::Color));
 
-    sf::RenderTexture &ae_texture = os.ae->window_texture;
+    sf::RenderTexture &ae_texture = os.window_texture;
 
     for (; window.isOpen();) {
         sf::Event event;
@@ -106,8 +106,8 @@ void render_engine::main_loop() {
         ImGui::Begin("Debugging");
         ////std::string
         ImGui::Text(std::string("FPS: " + std::to_string(fps)).c_str());
-        ImGui::Text(std::string("TPS: " + std::to_string(os.ae->tps)).c_str());
-        ImGui::Text(std::string("Longest Alive Index: " + std::to_string(os.ae->longest_alive_index)).c_str());
+        ImGui::Text(std::string("TPS: " + std::to_string(os.tps)).c_str());
+        ImGui::Text(std::string("Longest Alive Index: " + std::to_string(os.longest_alive_index)).c_str());
 
         //ImGui::Begin("Color Window");
         ////ImGui::Begin("testing");
@@ -165,7 +165,7 @@ void render_engine::main_loop() {
         ImGui::SFML::Render(window);
 
         glBindTexture(GL_TEXTURE_2D, ae_texture.getTexture().getNativeHandle());
-        glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, dat);
+        glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, os.screen_dat.get());
         //log((int)(*((sf::Color *)(dat + (1600-100) * 900 * 4))).r);
 
 
@@ -175,7 +175,7 @@ void render_engine::main_loop() {
         //ae_texture.display();
         //for(int i = 0; i<900; i++){
         //    for(int j = 0; j<1600; j++){
-        //        log(j<<" "<<i<<" "<<(int)dat[i*1600+j].r<<" "<<(int)dat[i*1600+j].g<<" "<<(int)dat[i*1600+j].b);
+        //        log(j<<" "<<i<<" "<<(int)os.screen_dat[i*1600+j].r<<" "<<(int)os.screen_dat[i*1600+j].g<<" "<<(int)os.screen_dat[i*1600+j].b);
         //    }
         //}
         //break;
