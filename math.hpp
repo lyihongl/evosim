@@ -93,4 +93,17 @@ void print(const char* name, const T &t) {
   std::cout<<t<<std::endl;
 }
 
+void start_scan_positions(std::vector<sf::Vector2f> &start_scan, float angle){
+    float angles[]{0, M_PI / 4.f, M_PI / 2.f, 3 * M_PI / 4.f, M_PI, 5 * M_PI / 4.f, 3 * M_PI / 2.f, 7 * M_PI / 4.f};
+
+    float x = 12, y = 0;
+    for (int i = 0; i < 8; i++) {
+        angles[i]+=angle*M_PI/180;
+        log("angles: " << angles[i]);
+        start_scan.push_back({(std::abs(x * cos(angles[i])) > 1e-05) ? x * cos(angles[i]) : 0,
+                              (std::abs(x * sin(angles[i])) > 1e-05) ? x * sin(angles[i]) : 0});
+        log(start_scan[i].x << " " << start_scan[i].y);
+    }
+}
+
 };  // namespace evo_math

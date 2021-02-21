@@ -44,9 +44,16 @@ class render_engine {
     void draw_angled_line(sf::RenderTarget &target, const sf::Vector2f &position, const double length, const int angle);
     std::unordered_map<std::string, std::string> debug_info;
     render_engine(int width, int height, std::string title, omni_sight &os);
+    template <typename T>
+    void draw_to_target(std::vector<sf::RenderTexture> &targets, std::size_t target, T t);
     //sf::Image &get_window_image();
     //uint32_t get_pixel(unsigned int x, unsigned int y);
 };
+
+template <typename T>
+void render_engine::draw_to_target(std::vector<sf::RenderTexture> &targets, std::size_t target, T t) {
+    targets[target].draw(t);
+}
 
 render_engine::render_engine(int width, int height, std::string title, omni_sight &os) : os{os}, window{sf::VideoMode(width, height), title, sf::Style::Close | sf::Style::Titlebar} {
     window.setFramerateLimit(60);
@@ -78,9 +85,9 @@ void render_engine::main_loop() {
     float color[3] = {0.f, 0.f, 0.f};
 
     //char dat[2000*4][2000*4]{0};
-    sf::Color* dat = (sf::Color*)malloc(1600*900*sizeof(sf::Color));
+    sf::Color *dat = (sf::Color *)malloc(1600 * 900 * sizeof(sf::Color));
 
-    sf::RenderTexture &ae_texture = os.window_texture;
+    //sf::RenderTexture &ae_texture = os.vision_layer;
 
     for (; window.isOpen();) {
         sf::Event event;
@@ -123,7 +130,11 @@ void render_engine::main_loop() {
         frames++;
         //window.clear();
         window.clear(bgColor);  // fill background with color
-        ae_texture.clear();
+
+        for (auto &it : os.render_targets) {
+            it.clear();
+        }
+        //ae_texture.clear();
         //window_contents_texture.clear();
         fps_text.setString("FPS: " + std::to_string(fps));
         fps_text.setOrigin(sf::Vector2f{-20, 0});
@@ -154,7 +165,8 @@ void render_engine::main_loop() {
             template_circle.setOutlineThickness(1);
             template_circle.setOutlineColor(sf::Color(255, 255, 255));
             window.draw(template_circle);
-            ae_texture.draw(template_circle);
+            draw_to_target(os.render_targets, 0, template_circle);
+            //ae_texture.draw(template_circle);
             draw_angled_line(window, os.am->positions[i], 50, os.am->angles[i]);
             draw_angled_line(window, os.am->positions[i], 50, os.am->angles[i] + os.am->fovs[i]);
             draw_angled_line(window, os.am->positions[i], 50, os.am->angles[i] - os.am->fovs[i]);
@@ -163,13 +175,18 @@ void render_engine::main_loop() {
         ImGui::End();
 
         ImGui::SFML::Render(window);
+        for(int i = 0; i<os.render_targets.size(); i++){
+            glBindTexture(GL_TEXTURE_2D, os.render_targets[i].getTexture().getNativeHandle());
+            glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, os.screen_dat[i].get());
+            glBindTexture(GL_TEXTURE_2D, 0);
+        }
 
-        glBindTexture(GL_TEXTURE_2D, ae_texture.getTexture().getNativeHandle());
-        glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, os.screen_dat.get());
-        //log((int)(*((sf::Color *)(dat + (1600-100) * 900 * 4))).r);
+        //glBindTexture(GL_TEXTURE_2D, os.render_targets[0].getTexture().getNativeHandle());
+        //glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, os.screen_dat.get());
+        ////log((int)os.screen_dat[800*1600+100].r);
+        ////log((int)(*((sf::Color *)(dat + (1600-100) * 900 * 4))).r);
 
-
-        glBindTexture(GL_TEXTURE_2D, 0);
+        //glBindTexture(GL_TEXTURE_2D, 0);
 
         window.display();
         //ae_texture.display();

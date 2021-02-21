@@ -66,7 +66,7 @@ int main() {
 
     //std::thread render_thread{&begin_render_thread};
     //render_thread.join();
-    omni_sight os{1600, 900};
+    omni_sight os{1600, 900, 4};
     am->add_agent(sf::Vector2f{100, 100}, sf::Color(123, 255, 22), MLP(os.layers, 1), std::rand() % 360);
     //am->add_agent(sf::Vector2f{100, 0}, sf::Color(123, 0, 0), MLP(os.layers, 1), std::rand() % 360);
     //am->add_agent(sf::Vector2f{0, 100}, sf::Color(123, 0, 0), MLP(os.layers, 1), std::rand() % 360);

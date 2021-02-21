@@ -17,19 +17,28 @@ struct omni_sight {
     //actions_engine *ae;
     agent_manager *am;
     Eigen::ArrayXi layers;
-    std::unique_ptr<sf::Color> screen_dat;
+    std::vector<std::unique_ptr<sf::Color[]>> screen_dat;
     sf::RenderTexture scent_map;
 
-
     //void init_screen_dat(int w, int h);
-
-    sf::RenderTexture window_texture;
+    std::vector<sf::RenderTexture> render_targets;
+    //sf::RenderTexture vision_layer;
     unsigned int tps;
     int longest_alive_index;
 
-    omni_sight(int w, int h) : layers(3) {
-        window_texture.create(w, h);
-        screen_dat = std::unique_ptr<sf::Color>(new sf::Color[w * h * 4]);
+    omni_sight(int w, int h, std::size_t render_layers) : layers(3),
+                                                          render_targets(render_layers) ,
+                                                          screen_dat(render_layers)
+    {
+        for (auto &it : render_targets) {
+            it.create(w, h);
+        }
+
+        for(auto &it : screen_dat) {
+            it = std::unique_ptr<sf::Color[]>(new sf::Color[1600*900*4]);
+        }
+        //vision_layer.create(w, h);
+        //screen_dat = std::unique_ptr<sf::Color>(new sf::Color[w * h * 4]);
         //screen_dat = std::shared_ptr<char>(new char[w*h*4]);
         longest_alive_index = -1;
         //re = nullptr;
