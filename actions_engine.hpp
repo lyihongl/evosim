@@ -47,6 +47,7 @@ void actions_engine::run_engine() {
     std::size_t mutate_max_index = 0;
     //char *dat = (char *)malloc(1600 * 900 * 4);
     //float omega = 0.15;
+    std::vector<sf::Vector2f> start_scan(8);
     for (; run;) {
         time_now = std::chrono::system_clock::now();
         std::chrono::duration<double, std::milli> delta_second = time_now - time_end_tps;
@@ -68,8 +69,12 @@ void actions_engine::run_engine() {
         //log(window_texture.getTexture().getNativeHandle());
 
         for (int i = 0; i < os.am->num_agents; i++) {
-            std::vector<sf::Vector2f> start_scan;
             evo_math::start_scan_positions(start_scan, os.am->angles[i]);
+            for(auto &it : start_scan){
+                (it)+=os.am->positions[i];
+            }
+            //break;
+            //evo_math::populate_line_points()
             //glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, dat);
             //log(*((int*)(dat + 100*900*4+100*4)));
             //if (os.am->active_agent_set.find(i) == os.am->active_agent_set.end()) continue;
@@ -143,6 +148,7 @@ void actions_engine::run_engine() {
 
             //os.am->spike[i] = (res[2] >= 0.5) ? 1 : 0;
         }
+        //break;
         //longest_alive_index = mutate_max_index;
         sec_passed = (sec_passed) ? false : sec_passed;
         //if(sec_passed) {
