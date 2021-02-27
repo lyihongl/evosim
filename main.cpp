@@ -17,64 +17,45 @@
 
 int main() {
     srand((unsigned int)time(0));
-    //std:: cout << (-400 % 360) << std::endl;
     evo_math::init_trig_table();
-    Eigen::MatrixXd test(1, 3);
-    Eigen::MatrixXd test2(3, 3);
-    test << 0.5, 0.8, 0.1;
-    test2 << 1, 4, 1,
-        1, 5, 1,
-        1, 1, 1;
-    //std::cout<<test*test2<<std::endl;
+
+    // TESTING
+
+    //std::vector<sf::Vector2f> test(30);
+    //sf::Vector2f testpoint{100, 800};
+    //log("trig test "<<evo_math::sin(135) << " "<<evo_math::cos(135));
+    //evo_math::populate_line_points(test, 30, testpoint, 300, 135);
+    //for(auto &it: test){
+    //    log_precision(it.x <<" "<<it.y, 6)
+    //}
+
+    //std::vector<sf::Vector2f> start_scan(8);
+    //std::vector<int> scan_angle(8);
+    //std::vector<std::vector<sf::Vector2f>> scan_points(8, std::vector<sf::Vector2f>(30));
+    //evo_math::start_scan_positions(start_scan, scan_angle, 12);
+    //for (int j = 0; j < start_scan.size(); j++) {
+    //    start_scan[j] += {100, 800};
+    //    evo_math::populate_line_points(scan_points[j], 30, start_scan[j], 300, scan_angle[j]);
+    //    log("start scan: " << scan_angle[j] << " " << start_scan[j].x << " " << start_scan[j].y);
+    //}
+    //for (int k = 0; k < scan_points.size(); k++) {
+    //    for (int j = 0; j < scan_points[k].size(); j++) {
+    //        log_precision("points: " << k << " " << j << " " << scan_points[k][j].x << " " << scan_points[k][j].y, 6);
+    //    }
+    //}
+
+    //
+
     std::unique_ptr<agent_manager> am = std::unique_ptr<agent_manager>(new agent_manager{});
     asset_manager assetm;
     assetm.load_assets();
-
-    //MLP m(layers, 1);
-    //ArrayXn input(3);
-    //input << 1, 2, 3;
-    //input.conservativeResize(layers[0]+1);
-    //evo_math::print_vector("WEIGHTS", m.weights);
-    //std::cout << m.eval(input) << std::endl;
-    //std::cout << m.eval(input) << std::endl;
-    //evo_math::print_vector("OUTPUT", m.eval(input));
-    //ArrayXn input;
-    //m.eval();
-
-    //am -> add_agent(sf::Vector2f{300, 300}, sf::Color(0, 255, 0), MLP(layers, 1), 45);
-    //am -> add_decision_matrix(0, test);
-    //am -> add_decision_matrix(0, test2);
-
-    //am -> add_decision_matrix(1, test);
-    //am -> add_decision_matrix(1, test2);
-    //for(int i = 0; i<evo_math::RESOLUTION; i++){
-    //    std::cout<<evo_math::sin(i)<<" "<<evo_math::cos(i)<<std::endl;
-    //}
-    //std::unique_ptr<actions> a = std::move( calculate_action(am.decision_matrices[0]));
-    //auto m = am.decision_matrices[0][0];
-    //auto m = am.get_val<std::vector<Eigen::MatrixXd>>(0)[0];
-    //std::cout<<m <<std::endl;
-    //std::cout<<am.get_val<Eigen::MatrixXd>()<<std::endl;
-    std::vector<sf::Vector2f> test3;
-    sf::Vector2f start{0, 0};
-    evo_math::populate_line_points(test3, 20, start, 50, 45);
     log("angle test: " << evo_math::angle_between(210, 170, 180));
     log("angle test: " << evo_math::angle_between(45, -270, 46));
-    for (const auto &a : test3) {
-        log(a.x << " " << a.y);
-    }
 
-    //std::thread render_thread{&begin_render_thread};
-    //render_thread.join();
-    omni_sight os{1600, 900, 4};
+    // layers
+
+    omni_sight os{1600, 900, 6};
     am->add_agent(sf::Vector2f{100, 100}, sf::Color(123, 255, 22), MLP(os.layers, 1), std::rand() % 360);
-    //am->add_agent(sf::Vector2f{100, 0}, sf::Color(123, 0, 0), MLP(os.layers, 1), std::rand() % 360);
-    //am->add_agent(sf::Vector2f{0, 100}, sf::Color(123, 0, 0), MLP(os.layers, 1), std::rand() % 360);
-    //for(int i = 0; i<1000; i+=10){
-    //    for(int j = 0; j<1000; j+=100){
-    //        am -> add_agent(sf::Vector2f{i, j}, sf::Color(std::rand()%255+1, std::rand()%255+1, std::rand()%255), MLP(os.layers, 1), std::rand()%360);
-    //    }
-    //}
     for (auto it = am->active_agent_set.begin(); it != am->active_agent_set.end(); it++) {
         log("it: " << *it);
     }
@@ -82,15 +63,7 @@ int main() {
     render_engine r{1600, 900, "testing", os};
     r.p_assetm = &assetm;
     actions_engine a{1600, 900, os};
-    //os.ae = &a;
-    //os.re = &r;
     os.am = am.get();
-    //a.p_am = am.get();
-    //a.p_r_engine = &r;
-    //r.ae = &a;
-    //r.p_am = am.get();
-
-    //std::thread render_thread{&render_engine::main_loop, &r};
     a.run = true;
 
     std::thread calc_thread{&actions_engine::run_engine, &a};
@@ -99,20 +72,6 @@ int main() {
     a.run = false;
 
     calc_thread.join();
-    //render_thread.join();
-
-    //pthread_create(&render_thread, NULL, &r.main_loop, NULL);
-    //r.main_loop();
-    //sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
-    //sf::CircleShape shape(100.f);
-    //shape.setFillColor(sf::Color::Green);
-
-    //agent_manager a{};
-    //position p{1, 2};
-    //decision_matrix m{};
-    //agent_type t = prey;
-    //a.add_agent(p, t, m);
-    //std::cout<<a.positions[0].x<<" "<<a.positions[0].y<<" "<<a.types[0]<<std::endl;
 
     return 0;
 }

@@ -28,7 +28,7 @@ class actions_engine {
     bool run{false};
     void run_engine();
     actions_engine(int width, int height, omni_sight &os);
-    int tps;
+    //int tps;
     std::size_t longest_alive_index;
 };
 actions_engine::actions_engine(int width, int height, omni_sight &os) : os{os} {
@@ -40,7 +40,7 @@ void actions_engine::run_engine() {
     std::chrono::time_point<std::chrono::system_clock> time_end = std::chrono::system_clock::now();
     std::chrono::time_point<std::chrono::system_clock> time_end_tps = std::chrono::system_clock::now();
     int ticks = 0;
-    tps = 0;
+    //tps = 0;
     int i = 0;
     bool sec_passed = false;
     unsigned int mutate_max = 0;
@@ -48,12 +48,14 @@ void actions_engine::run_engine() {
     //char *dat = (char *)malloc(1600 * 900 * 4);
     //float omega = 0.15;
     std::vector<sf::Vector2f> start_scan(8);
+    std::vector<int> scan_angle(8);
+    std::vector<std::vector<sf::Vector2f>> scan_points(8, std::vector<sf::Vector2f>(30));
     for (; run;) {
         time_now = std::chrono::system_clock::now();
         std::chrono::duration<double, std::milli> delta_second = time_now - time_end_tps;
 
         if (delta_second.count() > 1000) {
-            tps = ticks;
+            os.tps = ticks;
             ticks = 0;
             time_end_tps = std::chrono::system_clock::now();
             sec_passed = true;
@@ -69,10 +71,30 @@ void actions_engine::run_engine() {
         //log(window_texture.getTexture().getNativeHandle());
 
         for (int i = 0; i < os.am->num_agents; i++) {
-            evo_math::start_scan_positions(start_scan, os.am->angles[i]);
-            for(auto &it : start_scan){
-                (it)+=os.am->positions[i];
+            evo_math::start_scan_positions(start_scan, scan_angle, os.am->angles[i]);
+            for (int j = 0; j < start_scan.size(); j++) {
+                start_scan[j] += {os.am->positions[i].x, os.window_h - os.am->positions[i].y};
+                evo_math::populate_line_points(scan_points[j], 30, start_scan[j], 300, (int)scan_angle[j]);
             }
+            //for(int k = 0; k<scan_points.size(); k++){
+            //    for(int j = 0; j<scan_points[k].size(); j++){
+            //        log_precision("points: "<<k<<" "<<j<<" "<<scan_points[k][j].x<<" "<<scan_points[k][j].y, 6);
+            //    }
+            //}
+            //for(auto &it: scan_points){
+            //    for(auto &jt: it){
+            //        log("points: "<<jt.x <<" "<<jt.y);
+            //    }
+            //}
+            //break;
+            //for(auto &it : start_scan){
+            //    (it)+={os.am->positions[i].x, os.window_h - os.am->positions[i].y};
+            //    //it.y = os.window_h - it.y;
+            //    //log(it.x << " "<<it.y);
+            //}
+            //for(auto &it: scan_angle){
+            //    log("angle: "<<it);
+            //}
             //break;
             //evo_math::populate_line_points()
             //glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, dat);

@@ -1,9 +1,8 @@
-
 WIN_LIB = -LC:/Dev/mingw64/lib -LC:/Dev/SFML-2.5.1/lib -lopengl32 -lwinmm -lgdi32 -lfreetype -lmingw32 -lsfml-graphics -lsfml-window -lsfml-system
 WIN_INCLUDE = -IC:/Dev/mingw64/include -IC:/Dev/SFML-2.5.1/include -IC:/Dev/eigen-3.3.9 -I ./imgui -I ./imgui-sfml-master
 
 NIX_INCLUDE = -I ./imgui -I ./imgui-sfml-master -I ../eigen-3.3.9
-NIX_LIB = -lGL -lGLU -lglut -lsfml-graphics -lsfml-window -lsfml-system -pthread 
+NIX_LIB = -lGL -lGLU -lglut -lsfml-graphics -lsfml-window -lsfml-system -pthread
 
 SRC = main.cpp ./imgui/*.cpp ./imgui-sfml-master/*.cpp
 all:

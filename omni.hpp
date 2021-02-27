@@ -22,6 +22,7 @@ struct omni_sight {
 
     //void init_screen_dat(int w, int h);
     std::vector<sf::RenderTexture> render_targets;
+    unsigned int window_w, window_h;
     //sf::RenderTexture vision_layer;
     unsigned int tps;
     int longest_alive_index;
@@ -37,25 +38,15 @@ struct omni_sight {
         for(auto &it : screen_dat) {
             it = std::unique_ptr<sf::Color[]>(new sf::Color[1600*900*4]);
         }
-        //vision_layer.create(w, h);
-        //screen_dat = std::unique_ptr<sf::Color>(new sf::Color[w * h * 4]);
-        //screen_dat = std::shared_ptr<char>(new char[w*h*4]);
+        window_w = w;
+        window_h = h;
         longest_alive_index = -1;
-        //re = nullptr;
-        //ae = nullptr;
         tps = 0;
         am = nullptr;
         layers << 6, 8, 3;
     }
 
-    //~omni_sight(){
-    //    delete screen_dat;
-    //}
-
-    //omni_sight(render_engine *re, actions_engine *ae, agent_manager *am):layers(3){
-    //    //this -> re = re;
-    //    //this -> ae = ae;
-    //    //this -> am = am;
-    //    this->layers << 3,6,3;
-    //}
+    const sf::Color &get_color_from_buff(const std::size_t buffer, const unsigned int x, const unsigned int y){
+        return screen_dat[buffer][window_w*(window_h-y) + x];
+    }
 };

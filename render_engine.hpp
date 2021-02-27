@@ -164,7 +164,7 @@ void render_engine::main_loop() {
             template_circle.setPosition(os.am->positions[i]);
             template_circle.setOutlineThickness(1);
             template_circle.setOutlineColor(sf::Color(255, 255, 255));
-            os.render_targets[0].draw(template_circle);
+            //os.render_targets[0].draw(template_circle);
             draw_to_target(os.render_targets, 0, template_circle);
             //ae_texture.draw(template_circle);
             draw_angled_line(os.render_targets[0], os.am->positions[i], 50, os.am->angles[i]);
@@ -175,18 +175,11 @@ void render_engine::main_loop() {
         ImGui::End();
 
         ImGui::SFML::Render(window);
-        int counter = 0;
-        for (auto &it : os.render_targets ) {
-            glBindTexture(GL_TEXTURE_2D, it.getTexture().getNativeHandle());
-            glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, os.screen_dat[counter].get());
+        for(int i = 0; i<os.render_targets.size(); i++){
+            glBindTexture(GL_TEXTURE_2D, os.render_targets[i].getTexture().getNativeHandle());
+            glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, os.screen_dat[i].get());
             glBindTexture(GL_TEXTURE_2D, 0);
-            //counter++;
         }
-        //for(int i = 0; i<os.render_targets.size(); i++){
-        //    glBindTexture(GL_TEXTURE_2D, os.render_targets[i].getTexture().getNativeHandle());
-        //    glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, os.screen_dat[i].get());
-        //    glBindTexture(GL_TEXTURE_2D, 0);
-        //}
 
         //glBindTexture(GL_TEXTURE_2D, os.render_targets[0].getTexture().getNativeHandle());
         //glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, os.screen_dat.get());

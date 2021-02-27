@@ -69,8 +69,9 @@ double cos(const int i) {
 }
 
 void populate_line_points(std::vector<sf::Vector2f> &list, std::size_t points, sf::Vector2f &start, const double length, const int angle) {
+    //log("populate line points angle: "<<angle);
     for (int i = 0; i < points + 1; i++) {
-        list.push_back(sf::Vector2f(start.x + i / (double)points * length * evo_math::cos(normalize_angle(angle)), start.y + i / (double)points * length * evo_math::sin(normalize_angle(angle))));
+        list[i] = sf::Vector2f(start.x + i / (double)points * length * evo_math::cos(angle), start.y + i / (double)points * length * evo_math::sin(angle));
     }
 }
 
@@ -93,11 +94,12 @@ void print(const char* name, const T &t) {
   std::cout<<t<<std::endl;
 }
 
-void start_scan_positions(std::vector<sf::Vector2f> &start_scan, float angle){
+void start_scan_positions(std::vector<sf::Vector2f> &start_scan, std::vector<int> &scan_angles, float angle){
     float angles[]{0, M_PI / 4.f, M_PI / 2.f, 3 * M_PI / 4.f, M_PI, 5 * M_PI / 4.f, 3 * M_PI / 2.f, 7 * M_PI / 4.f};
 
     float x = 12, y = 0;
     for (int i = 0; i < 8; i++) {
+        scan_angles[i] = (int)(std::round(angle + angles[i]*180/M_PI))%360;
         angles[i]+=(angle*M_PI/180);
         //log("angles: " << angles[i]);
         start_scan[i] = sf::Vector2f{(std::abs(x * std::cos(angles[i])) > 1e-05) ? x * std::cos(angles[i]) : 0,
