@@ -3,6 +3,9 @@
 #include <SFML/System/Vector2.hpp>
 #include <unordered_set>
 #include <stack>
+#include <set>
+#include <utility>
+#include <algorithm>
 //#include "math2d.hpp"
 #include <Eigen/Dense>
 #include <unordered_map>
@@ -25,9 +28,12 @@ class agent_manager{
         std::vector<uint8_t> eye_input_g;
         std::vector<float> energy;
         std::unordered_set<std::size_t> active_agent_set;
+        //std::set<std::pair<unsigned int, std::size_t>> sorted_agent_set;
         std::stack<std::size_t> empty_slots_stack;
         std::vector<bool> spike;
-        std::vector<unsigned long long> time_alive;
+        std::vector<unsigned int> time_alive;
+        std::vector<float> angular_v;
+        std::vector<float> velocity;
         //std::vector<std::unordered_map<std::string, double>> actions;
         //std::vector<agent_type> types;
         std::vector<MLP> MLPs;
@@ -54,6 +60,9 @@ void agent_manager::add_agent(sf::Vector2f& p, sf::Color& t, MLP& m, double angl
         energy.push_back(100.f);
         spike.push_back(0);
         time_alive.push_back(0);
+        angular_v.push_back(0);
+        velocity.push_back(0);
+        //sorted_agent_set.insert({0, num_agents});
         num_agents++;
     } else {
         std::size_t index = empty_slots_stack.top();
@@ -70,6 +79,17 @@ void agent_manager::add_agent(sf::Vector2f& p, sf::Color& t, MLP& m, double angl
         energy[index] = 100.f;
         spike[index] = 0;
         time_alive[index] = 0;
+        angular_v[index] = 0;
+        velocity[index] = 0;
+        //sorted_agent_set.begin() -> first = 1;
+        //auto it = std::find_if(sorted_agent_set.begin(), sorted_agent_set.end(), [&](const std::pair<unsigned int, std::size_t>& val)-> bool {
+        //    return val.second == index;
+        //});
+        //sorted_agent_set.erase(it);
+        //sorted_agent_set.insert({0, num_agents});
+        //(*it).first = 0;
+        //it -> first = 0;
+        //sorted_agent_set[index] = {0, index};
     }
 }
 void agent_manager::add_agent(sf::Vector2f&& p, sf::Color&& t, MLP&& m, double angle, double fov){
@@ -86,6 +106,9 @@ void agent_manager::add_agent(sf::Vector2f&& p, sf::Color&& t, MLP&& m, double a
         energy.push_back(100.f);
         spike.push_back(0);
         time_alive.push_back(0);
+        angular_v.push_back(0);
+        velocity.push_back(0);
+        //sorted_agent_set.insert({0, num_agents});
         num_agents++;
     } else {
         std::size_t index = empty_slots_stack.top();
@@ -102,6 +125,8 @@ void agent_manager::add_agent(sf::Vector2f&& p, sf::Color&& t, MLP&& m, double a
         energy[index] = 100.f;
         spike[index] = 0;
         time_alive[index] = 0;
+        angular_v[index] = 0;
+        velocity[index] = 0;
     }
 }
 

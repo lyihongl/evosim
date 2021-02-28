@@ -103,6 +103,7 @@ void render_engine::main_loop() {
         ////std::string
         ImGui::Text(std::string("FPS: " + std::to_string(fps)).c_str());
         ImGui::Text(std::string("TPS: " + std::to_string(os.ae->tps)).c_str());
+        ImGui::Text(std::string("Longest Alive Index: "+std::to_string(os.ae->longest_alive_index)).c_str());
 
         //ImGui::Begin("Color Window");
         ////ImGui::Begin("testing");
