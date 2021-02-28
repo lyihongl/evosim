@@ -1,4 +1,4 @@
-#include <SFML/System.hpp>
+#include <SFML/System.hpp> 
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <Eigen/Dense>
@@ -14,8 +14,8 @@
 #include "threading_engine.hpp"
 #include "MLP.hpp"
 
-int main()
-{
+int main() {
+    //return 0;
     srand((unsigned int) time(0));
     //std:: cout << (-400 % 360) << std::endl;
     evo_math::init_trig_table();
@@ -29,6 +29,7 @@ int main()
     std::unique_ptr<agent_manager> am = std::unique_ptr<agent_manager>(new agent_manager{});
     asset_manager assetm;
     assetm.load_assets();
+
 
 
     //MLP m(layers, 1);
@@ -69,6 +70,32 @@ int main()
     //std::thread render_thread{&begin_render_thread};
     //render_thread.join();
     omni_sight os{};
+    MLP breed1(os.layers, 1);
+    MLP breed2(os.layers, 1);
+    std::vector<Eigen::MatrixXd> breed3 = cross_breed(breed1.weights, breed2.weights);
+    log("breed1");
+    for(auto &it : breed1.weights){
+        std::cout << it << std::endl << std::endl;
+    }
+    log("breed2");
+    for(auto &it : breed2.weights){
+        std::cout << it << std::endl << std::endl;
+        std::cout << it.rows() << std::endl << std::endl;
+        std::cout << it.cols() << std::endl << std::endl;
+        //it.conservativeResize(os.layers[0]+1);
+        //std::cout << it.rows() << std::endl << std::endl;
+        //std::cout << it.cols() << std::endl << std::endl;
+    }
+    log("breed3");
+    for(auto &it : breed3){
+        std::cout << it << std::endl << std::endl;
+    }
+    std::vector<Eigen::MatrixXd> breed4 = vary_weights(breed3, os.layers);
+    log("breed4");
+    for(auto &it : breed4){
+        std::cout << it << std::endl << std::endl;
+    }
+    return 0;
     for(int i = 0; i<1000; i+=100){
         for(int j = 0; j<1000; j+=100){
             am -> add_agent(sf::Vector2f{i, j}, sf::Color(std::rand()%255+1, std::rand()%255+1, std::rand()%255), MLP(os.layers, 1), std::rand()%360);
