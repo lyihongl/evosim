@@ -70,40 +70,40 @@ int main() {
     //std::thread render_thread{&begin_render_thread};
     //render_thread.join();
     omni_sight os{};
-    MLP breed1(os.layers, 1);
-    MLP breed2(os.layers, 1);
-    std::vector<Eigen::MatrixXd> breed3 = cross_breed(breed1.weights, breed2.weights);
-    log("breed1");
-    for(auto &it : breed1.weights){
-        std::cout << it << std::endl << std::endl;
-    }
-    log("breed2");
-    for(auto &it : breed2.weights){
-        std::cout << it << std::endl << std::endl;
-        std::cout << it.rows() << std::endl << std::endl;
-        std::cout << it.cols() << std::endl << std::endl;
-        //it.conservativeResize(os.layers[0]+1);
-        //std::cout << it.rows() << std::endl << std::endl;
-        //std::cout << it.cols() << std::endl << std::endl;
-    }
-    log("breed3");
-    for(auto &it : breed3){
-        std::cout << it << std::endl << std::endl;
-    }
-    std::vector<Eigen::MatrixXd> breed4 = vary_weights(breed3, os.layers);
-    log("breed4");
-    for(auto &it : breed4){
-        std::cout << it << std::endl << std::endl;
-    }
-    return 0;
+    //MLP breed1(os.layers, 1);
+    //MLP breed2(os.layers, 1);
+    //std::vector<Eigen::MatrixXd> breed3 = cross_breed(breed1.weights, breed2.weights);
+    //log("breed1");
+    //for(auto &it : breed1.weights){
+    //    std::cout << it << std::endl << std::endl;
+    //}
+    //log("breed2");
+    //for(auto &it : breed2.weights){
+    //    std::cout << it << std::endl << std::endl;
+    //    std::cout << it.rows() << std::endl << std::endl;
+    //    std::cout << it.cols() << std::endl << std::endl;
+    //    //it.conservativeResize(os.layers[0]+1);
+    //    //std::cout << it.rows() << std::endl << std::endl;
+    //    //std::cout << it.cols() << std::endl << std::endl;
+    //}
+    //log("breed3");
+    //for(auto &it : breed3){
+    //    std::cout << it << std::endl << std::endl;
+    //}
+    //std::vector<Eigen::MatrixXd> breed4 = vary_weights(breed3, os.layers);
+    //log("breed4");
+    //for(auto &it : breed4){
+    //    std::cout << it << std::endl << std::endl;
+    //}
+    //return 0;
     for(int i = 0; i<1000; i+=100){
         for(int j = 0; j<1000; j+=100){
             am -> add_agent(sf::Vector2f{i, j}, sf::Color(std::rand()%255+1, std::rand()%255+1, std::rand()%255), MLP(os.layers, 1), std::rand()%360);
         }
     }
-    for(auto it = am->active_agent_set.begin(); it != am->active_agent_set.end(); it++){
-        log("it: " <<*it);
-    }
+    //for(auto it = am->active_agent_set.begin(); it != am->active_agent_set.end(); it++){
+    //    log("it: " <<*it);
+    //}
     log("set size: "<<am->active_agent_set.size());
     render_engine r{1600, 900, "testing", os};
     r.p_assetm = &assetm;
