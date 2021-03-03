@@ -26,6 +26,7 @@ class agent_manager{
         std::vector<uint8_t> eye_input_r;
         std::vector<uint8_t> eye_input_b;
         std::vector<uint8_t> eye_input_g;
+        std::vector<double> input_dist;
         std::vector<float> energy;
         std::unordered_set<std::size_t> active_agent_set;
         //std::set<std::pair<unsigned int, std::size_t>> sorted_agent_set;
@@ -62,6 +63,7 @@ void agent_manager::add_agent(sf::Vector2f& p, sf::Color& t, MLP& m, double angl
         time_alive.push_back(0);
         angular_v.push_back(0);
         velocity.push_back(0);
+        input_dist.push_back(100000);
         //sorted_agent_set.insert({0, num_agents});
         num_agents++;
     } else {
@@ -81,6 +83,7 @@ void agent_manager::add_agent(sf::Vector2f& p, sf::Color& t, MLP& m, double angl
         time_alive[index] = 0;
         angular_v[index] = 0;
         velocity[index] = 0;
+        input_dist[index] = 100000;
         //sorted_agent_set.begin() -> first = 1;
         //auto it = std::find_if(sorted_agent_set.begin(), sorted_agent_set.end(), [&](const std::pair<unsigned int, std::size_t>& val)-> bool {
         //    return val.second == index;
@@ -108,6 +111,7 @@ void agent_manager::add_agent(sf::Vector2f&& p, sf::Color&& t, MLP&& m, double a
         time_alive.push_back(0);
         angular_v.push_back(0);
         velocity.push_back(0);
+        input_dist.push_back(100000);
         //sorted_agent_set.insert({0, num_agents});
         num_agents++;
     } else {
@@ -127,6 +131,7 @@ void agent_manager::add_agent(sf::Vector2f&& p, sf::Color&& t, MLP&& m, double a
         time_alive[index] = 0;
         angular_v[index] = 0;
         velocity[index] = 0;
+        input_dist[index] = 100000;
     }
 }
 

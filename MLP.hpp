@@ -13,13 +13,14 @@ struct MLP
     std::vector<VectorXn> outputs;
     std::vector<VectorXn> inputs;
 
-    MLP(Eigen::ArrayXi layers, double rval);
+    MLP(Eigen::ArrayXi &layers, double rval);
     MLP(const MLP &m);
+    MLP(Eigen::ArrayXi &layers, std::vector<Eigen::MatrixXd> &&weights);
     ArrayXn eval(ArrayXn input);
 };
 std::vector<Eigen::MatrixXd> cross_breed(const std::vector<Eigen::MatrixXd> &weights1, const std::vector<Eigen::MatrixXd> &weights2);
 
-MLP::MLP(Eigen::ArrayXi layers, double rval)
+MLP::MLP(Eigen::ArrayXi &layers, double rval)
 {
     this->layers = layers;
     for (std::size_t i = 1; i < layers.size(); i++)
@@ -32,6 +33,10 @@ MLP::MLP(const MLP &m)
 {
     this->layers = m.layers;
     this->weights = m.weights;
+}
+MLP::MLP(Eigen::ArrayXi &layers, std::vector<Eigen::MatrixXd> &&weights){
+    this -> layers = layers;
+    this -> weights = std::move(weights);
 }
 
 ArrayXn MLP::eval(ArrayXn input)

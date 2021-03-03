@@ -140,11 +140,20 @@ void render_engine::main_loop() {
             //log("d");
             ImGui::PopStyleColor();
             //log("e");
+            bool pop_later = false;
+            if(i == os.ae->longest_alive_index){
+                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(ImColor(200, 40, 0)));
+                pop_later = true;
+            }
             ImGui::Text(std::string("Agent: " + std::to_string(i) +
                                     " Energy: " + std::to_string(os.am->energy[i]) +
                                     " Spike: " + std::to_string(os.am->spike[i]) +
                                     " Time Alive: " + std::to_string(os.am->time_alive[i]))
                             .c_str());
+            //if(i == os.ae->longest_alive_index){
+            if(pop_later){
+                ImGui::PopStyleColor();
+            }
             //log("f");
             //if (os.am->types[i] == agent_type::pred)
             //    template_circle.setFillColor(sf::Color::Red);
@@ -153,8 +162,13 @@ void render_engine::main_loop() {
             template_circle.setFillColor(os.am->colors[i]);
             //log("g");
             template_circle.setPosition(os.am->positions[i]);
-            template_circle.setOutlineThickness(1);
-            template_circle.setOutlineColor(sf::Color(255, 255, 255));
+            if(i == os.ae->longest_alive_index){
+                template_circle.setOutlineThickness(3);
+                template_circle.setOutlineColor(sf::Color(255, 255, 0));
+            } else {
+                template_circle.setOutlineThickness(1);
+                template_circle.setOutlineColor(sf::Color(255, 255, 255));
+            }
             window.draw(template_circle);
             ae_texture.draw(template_circle);
             draw_angled_line(window, os.am->positions[i], 50, os.am->angles[i]);
