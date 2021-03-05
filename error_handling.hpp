@@ -1,4 +1,2 @@
 #pragma once
-enum status{
-    success, array_index
-};
+enum status { success, array_index };
