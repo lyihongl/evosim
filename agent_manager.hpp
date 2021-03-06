@@ -12,6 +12,7 @@
 
 #include "MLP.hpp"
 #include "error_handling.hpp"
+#include "shape_batch.hpp"
 
 enum agent_type { pred, prey };
 
@@ -42,6 +43,7 @@ public:
   void add_agent(sf::Vector2f &&p, sf::Color &&t, MLP &&m, double angle = 0,
                  double fov = 20);
   void remove_agent(std::size_t i);
+  octogon_batch batch;
   // std::size_t add_MLP(std::size_t agent, MLP& m);
   std::size_t num_agents;
   // std::vector<sf::Vector2f> start_scan{};
@@ -66,6 +68,7 @@ void agent_manager::add_agent(sf::Vector2f &p, sf::Color &t, MLP &m,
     time_alive.push_back(0);
     angular_v.push_back(0);
     velocity.push_back(0);
+    batch.add(p);
     // sorted_agent_set.insert({0, num_agents});
     num_agents++;
   } else {
@@ -114,6 +117,7 @@ void agent_manager::add_agent(sf::Vector2f &&p, sf::Color &&t, MLP &&m,
     time_alive.push_back(0);
     angular_v.push_back(0);
     velocity.push_back(0);
+    batch.add(p);
     // sorted_agent_set.insert({0, num_agents});
     num_agents++;
   } else {

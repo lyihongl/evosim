@@ -170,10 +170,10 @@ void actions_engine::run_engine() {
       ////}
 
       ////if (os.am->eye_input_b[i] != 0 || os.am->eye_input_g[i] != 0 ||
-      ///os.am->eye_input_r[i] != 0) { /    log((int)os.am->eye_input_b[i] << "
+      /// os.am->eye_input_r[i] != 0) { /    log((int)os.am->eye_input_b[i] << "
       ///" << (int)os.am->eye_input_g[i] << " " << (int)os.am->eye_input_r[i]);
       ////    log("res: " << res[1] << " " << os.am->positions[i].x << " " <<
-      ///os.am->positions[i].y);
+      /// os.am->positions[i].y);
       ////}
       // os.am->energy[i] -= 0.05;
       // if (os.am->energy[i] <= 0) {
@@ -196,8 +196,9 @@ void actions_engine::run_engine() {
     //    sec_passed = false;
     //}
     time_end = std::chrono::system_clock::now();
-    std::chrono::duration<double, std::milli> delta = time_now - time_end;
+    std::chrono::duration<double, std::milli> delta = time_end - time_now;
     using namespace std::chrono_literals;
+    //log(delta.count());
     std::this_thread::sleep_for(8ms - delta);
     //}
   }

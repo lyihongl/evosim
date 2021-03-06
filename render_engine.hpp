@@ -98,6 +98,9 @@ void render_engine::main_loop() {
   sf::Color *dat = (sf::Color *)malloc(1600 * 900 * sizeof(sf::Color));
 
   // sf::RenderTexture &ae_texture = os.vision_layer;
+  // std::vector<sf::Vertex> testOct;
+
+  // triangle 1
 
   for (; window.isOpen();) {
     sf::Event event;
@@ -149,12 +152,9 @@ void render_engine::main_loop() {
     }
     // ae_texture.clear();
     // window_contents_texture.clear();
-    fps_text.setString("FPS: " + std::to_string(fps));
-    fps_text.setOrigin(sf::Vector2f{-20, 0});
-    window.draw(fps_text);
 
-    sf::CircleShape template_circle(AGENT_SIZE);
-    template_circle.setOrigin(AGENT_SIZE, AGENT_SIZE);
+    // sf::CircleShape template_circle(AGENT_SIZE);
+    // template_circle.setOrigin(AGENT_SIZE, AGENT_SIZE);
     for (int i = 0; i < os.am->num_agents; i += 2) {
       // for (auto it = os.am->active_agent_set.begin(); it !=
       // os.am->active_agent_set.end(); it++) { log("agent size:
@@ -178,23 +178,25 @@ void render_engine::main_loop() {
       //    template_circle.setFillColor(sf::Color::Red);
       // else
       //    template_circle.setFillColor(sf::Color::Green);
-      template_circle.setFillColor(os.am->colors[i]);
-      template_circle.setPosition(os.am->positions[i]);
-      template_circle.setOutlineThickness(1);
-      template_circle.setOutlineColor(sf::Color(255, 255, 255));
+      // template_circle.setFillColor(os.am->colors[i]);
+      // template_circle.setPosition(os.am->positions[i]);
+      // template_circle.setOutlineThickness(1);
+      // template_circle.setOutlineColor(sf::Color(255, 255, 255));
       // os.render_targets[0].draw(template_circle);
-      draw_to_target(os.render_targets, 0, template_circle);
-      draw_to_target(os.render_targets, 1, template_circle);
+      // draw_to_target(os.render_targets, 0, template_circle);
+      // draw_to_target(os.render_targets, 1, template_circle);
       // ae_texture.draw(template_circle);
-      draw_angled_line(os.render_targets[0], os.am->positions[i], 50,
-                       os.am->angles[i]);
-      draw_angled_line(os.render_targets[0], os.am->positions[i], 50,
-                       os.am->angles[i] + os.am->fovs[i]);
-      draw_angled_line(os.render_targets[0], os.am->positions[i], 50,
-                       os.am->angles[i] - os.am->fovs[i]);
+      // draw_angled_line(os.render_targets[0], os.am->positions[i], 50,
+      //                 os.am->angles[i]);
+      // draw_angled_line(os.render_targets[0], os.am->positions[i], 50,
+      //                 os.am->angles[i] + os.am->fovs[i]);
+      // draw_angled_line(os.render_targets[0], os.am->positions[i], 50,
+      //                os.am->angles[i] - os.am->fovs[i]);
       // functor(os, i);
     }
-    window.draw(sf::Sprite(os.render_targets[0].getTexture()));
+    window.draw(&os.am->batch.vertices[0], os.am->batch.vertices.size(),
+                sf::Triangles);
+    // window.draw(sf::Sprite(os.render_targets[0].getTexture()));
     ImGui::End();
 
     ImGui::SFML::Render(window);

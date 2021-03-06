@@ -59,8 +59,8 @@ int main() {
 
   omni_sight os{1600, 900, 6};
   // am->add_agent(sf::Vector2f{100, 100}, sf::Color(123, 255, 22),
-  // MLP(os.layers, 1), std::rand() % 360);
-  for (int i = 0; i < 1000; i += 10) {
+  //              MLP(os.layers, 1), std::rand() % 360);
+  for (int i = 0; i < 1000; i += 100) {
     for (int j = 0; j < 1000; j += 10) {
       am->add_agent(sf::Vector2f{i, j}, sf::Color(123, 255, 22),
                     MLP(os.layers, 1), std::rand() % 360);
